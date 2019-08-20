@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @Api(description = "Security相关接口")
-@RequestMapping("/xboot/common")
+@RequestMapping("/common")
 @Transactional
 public class SecurityController {
 

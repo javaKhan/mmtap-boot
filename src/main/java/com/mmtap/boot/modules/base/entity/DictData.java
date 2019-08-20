@@ -2,7 +2,6 @@ package com.mmtap.boot.modules.base.entity;
 
 import com.mmtap.boot.base.MmtapBootBaseEntity;
 import com.mmtap.boot.common.constant.CommonConstant;
-import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,12 +12,11 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 
 /**
- * @author Exrick
+ * @author Mmtap
  */
 @Data
 @Entity
 @Table(name = "t_dict_data")
-@TableName("t_dict_data")
 @ApiModel(value = "字典数据")
 public class DictData extends MmtapBootBaseEntity {
 

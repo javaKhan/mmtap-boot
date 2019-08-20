@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +22,12 @@ import java.util.List;
 
 
 /**
- * @author Exrick
+ * @author Mmtap
  */
 @Slf4j
 @RestController
 @Api(description = "字典数据管理接口")
-@RequestMapping("/xboot/dictData")
+@RequestMapping("/dictData")
 @CacheConfig(cacheNames = "dictData")
 @Transactional
 public class DictDataController{
@@ -38,9 +37,6 @@ public class DictDataController{
 
     @Autowired
     private DictDataService dictDataService;
-
-    @Autowired
-    private StringRedisTemplate redisTemplate;
 
     @RequestMapping(value = "/getByCondition",method = RequestMethod.GET)
     @ApiOperation(value = "多条件分页获取用户列表")
@@ -73,19 +69,13 @@ public class DictDataController{
             return new ResultUtil<Object>().setErrorMsg("字典类型id不存在");
         }
         dictDataService.save(dictData);
-        // 删除缓存
-        redisTemplate.delete("dictData::"+dict.getType());
         return new ResultUtil<Object>().setSuccessMsg("添加成功");
     }
 
     @RequestMapping(value = "/edit",method = RequestMethod.POST)
     @ApiOperation(value = "编辑")
     public Result<Object> edit(@ModelAttribute DictData dictData){
-
         dictDataService.update(dictData);
-        // 删除缓存
-        Dict dict = dictService.get(dictData.getDictId());
-        redisTemplate.delete("dictData::"+dict.getType());
         return new ResultUtil<Object>().setSuccessMsg("编辑成功");
     }
 
@@ -94,11 +84,7 @@ public class DictDataController{
     public Result<Object> delByIds(@PathVariable String[] ids){
 
         for(String id : ids){
-            DictData dictData = dictDataService.get(id);
-            Dict dict = dictService.get(dictData.getDictId());
             dictDataService.delete(id);
-            // 删除缓存
-            redisTemplate.delete("dictData::"+dict.getType());
         }
         return new ResultUtil<Object>().setSuccessMsg("批量通过id删除数据成功");
     }

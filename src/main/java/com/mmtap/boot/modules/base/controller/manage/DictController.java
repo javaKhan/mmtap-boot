@@ -9,7 +9,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +21,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @Api(description = "字典管理接口")
-@RequestMapping("/xboot/dict")
+@RequestMapping("/dict")
 @Transactional
 public class DictController{
 
@@ -31,9 +30,6 @@ public class DictController{
 
     @Autowired
     private DictDataService dictDataService;
-
-    @Autowired
-    private StringRedisTemplate redisTemplate;
 
     @RequestMapping(value = "/getAll",method = RequestMethod.GET)
     @ApiOperation(value = "获取全部数据")
@@ -70,13 +66,8 @@ public class DictController{
     @RequestMapping(value = "/delByIds/{id}",method = RequestMethod.DELETE)
     @ApiOperation(value = "通过id删除")
     public Result<Object> delAllByIds(@PathVariable String id){
-
-
-        Dict dict = dictService.get(id);
         dictService.delete(id);
         dictDataService.deleteByDictId(id);
-        // 删除缓存
-        redisTemplate.delete("dictData::"+dict.getType());
         return new ResultUtil<Object>().setSuccessMsg("删除成功");
     }
 

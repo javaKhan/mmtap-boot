@@ -1,6 +1,5 @@
 package ${entity.controllerPackage};
 
-import MmtapBootBaseController;
 import PageUtil;
 import ResultUtil;
 import PageVo;
@@ -22,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RestController
 @Api(description = "${entity.description}管理接口")
-@RequestMapping("/xboot/${entity.classNameLowerCase}")
+@RequestMapping("/${entity.classNameLowerCase}")
 @Transactional
 public class ${entity.className}Controller extends MmtapBootBaseController<${entity.className}, ${entity.primaryKeyType}> {
 

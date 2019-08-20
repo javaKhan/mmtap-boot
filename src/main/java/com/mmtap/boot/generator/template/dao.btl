@@ -1,6 +1,5 @@
 package ${entity.daoPackage};
 
-import MmtapBootBaseDao;
 import ${entity.entityPackage}.${entity.className};
 
 import java.util.List;

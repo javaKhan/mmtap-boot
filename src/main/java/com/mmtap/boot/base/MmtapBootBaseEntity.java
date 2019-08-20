@@ -1,10 +1,9 @@
 package com.mmtap.boot.base;
 
-import com.mmtap.boot.common.constant.CommonConstant;
-import com.mmtap.boot.common.utils.SnowFlakeUtil;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mmtap.boot.common.constant.CommonConstant;
+import com.mmtap.boot.common.utils.SnowFlakeUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,7 +11,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
+import javax.persistence.EntityListeners;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -28,7 +29,6 @@ public abstract class MmtapBootBaseEntity implements Serializable{
     private static final long serialVersionUID = 1L;
 
     @Id
-    @TableId
     @ApiModelProperty(value = "唯一标识")
     private String id = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId());
 

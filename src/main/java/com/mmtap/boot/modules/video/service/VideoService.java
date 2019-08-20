@@ -12,12 +12,6 @@ import org.springframework.data.domain.Pageable;
  */
 public interface VideoService extends MmtapBootBaseService<Video,String> {
 
-    /**
-    * 多条件分页获取
-    * @param video
-    * @param searchVo
-    * @param pageable
-    * @return
-    */
-    Page<Video> findByCondition(Video video, SearchVo searchVo, Pageable pageable);
+   Page listVideo(String grade,String typeID,String state,String word,Pageable pageable);
+
 }

@@ -1,19 +1,19 @@
 package com.mmtap.boot.common.aop;
 
+import cn.hutool.core.util.StrUtil;
 import com.mmtap.boot.common.annotation.SystemLog;
 import com.mmtap.boot.common.utils.IpInfoUtil;
 import com.mmtap.boot.common.utils.ObjectUtil;
 import com.mmtap.boot.common.utils.ThreadPoolUtil;
 import com.mmtap.boot.modules.base.entity.Log;
-import com.mmtap.boot.modules.base.entity.elasticsearch.EsLog;
 import com.mmtap.boot.modules.base.service.LogService;
-import com.mmtap.boot.modules.base.service.elasticsearch.EsLogService;
-import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,12 +35,6 @@ import java.util.Map;
 public class SystemLogAspect {
 
     private static final ThreadLocal<Date> beginTimeThreadLocal = new NamedThreadLocal<Date>("ThreadLocal beginTime");
-
-    @Value("${xboot.logRecord.es}")
-    private Boolean esRecord;
-
-    @Autowired
-    private EsLogService esLogService;
 
     @Autowired
     private LogService logService;
@@ -85,40 +79,6 @@ public class SystemLogAspect {
             String username = user.getUsername();
 
             if (StrUtil.isNotBlank(username)) {
-
-                if(esRecord){
-                    EsLog esLog = new EsLog();
-
-                    //日志标题
-                    esLog.setName(getControllerMethodInfo(joinPoint).get("description").toString());
-                    //日志类型
-                    esLog.setLogType((int)getControllerMethodInfo(joinPoint).get("type"));
-                    //日志请求url
-                    esLog.setRequestUrl(request.getRequestURI());
-                    //请求方式
-                    esLog.setRequestType(request.getMethod());
-                    //请求参数
-                    Map<String,String[]> logParams=request.getParameterMap();
-                    esLog.setMapToParams(logParams);
-                    //请求用户
-                    esLog.setUsername(username);
-                    //请求IP
-                    esLog.setIp(ipInfoUtil.getIpAddr(request));
-                    //IP地址
-                    esLog.setIpInfo(ipInfoUtil.getIpCity(ipInfoUtil.getIpAddr(request)));
-                    //请求开始时间
-                    Date logStartTime = beginTimeThreadLocal.get();
-
-                    long beginTime = beginTimeThreadLocal.get().getTime();
-                    long endTime = System.currentTimeMillis();
-                    //请求耗时
-                    Long logElapsedTime = endTime - beginTime;
-                    esLog.setCostTime(logElapsedTime.intValue());
-                    ipInfoUtil.getInfo(request, ObjectUtil.mapToStringAll(request.getParameterMap()));
-
-                    //调用线程保存至ES
-                    ThreadPoolUtil.getPool().execute(new SaveEsSystemLogThread(esLog, esLogService));
-                }else{
                     Log log = new Log();
 
                     //日志标题
@@ -150,7 +110,6 @@ public class SystemLogAspect {
 
                     //调用线程保存至ES
                     ThreadPoolUtil.getPool().execute(new SaveSystemLogThread(log, logService));
-                }
             }
         } catch (Exception e) {
             log.error("AOP后置通知异常", e);
@@ -160,22 +119,21 @@ public class SystemLogAspect {
     /**
      * 保存日志至ES
      */
-    private static class SaveEsSystemLogThread implements Runnable {
-
-        private EsLog esLog;
-        private EsLogService esLogService;
-
-        public SaveEsSystemLogThread(EsLog esLog, EsLogService esLogService) {
-            this.esLog = esLog;
-            this.esLogService = esLogService;
-        }
-
-        @Override
-        public void run() {
-
-            esLogService.saveLog(esLog);
-        }
-    }
+//    private static class SaveEsSystemLogThread implements Runnable {
+//
+////        private EsLog esLog;
+////        private EsLogService esLogService;
+//
+//        public SaveEsSystemLogThread(EsLog esLog, EsLogService esLogService) {
+//            this.esLog = esLog;
+//            this.esLogService = esLogService;
+//        }
+//
+//        @Override
+//        public void run() {
+//            esLogService.saveLog(esLog);
+//        }
+//    }
 
     /**
      * 保存日志至数据库

@@ -2,7 +2,6 @@ package com.mmtap.boot.modules.base.entity;
 
 import com.mmtap.boot.base.MmtapBootBaseEntity;
 import com.mmtap.boot.common.utils.ObjectUtil;
-import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +16,6 @@ import java.util.Map;
 @Data
 @Entity
 @Table(name = "t_log")
-@TableName("t_log")
 @ApiModel(value = "日志")
 public class Log extends MmtapBootBaseEntity {
 
