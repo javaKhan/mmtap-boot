@@ -21,6 +21,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -145,12 +147,13 @@ public class AccountServiceImpl implements AccountService {
     public Account saveAccount(Account account) {
         Area area = areaDao.getOne(account.getProvince());
         account.setAccount(area.getNail()+account.getSchoolID());
-        account.setProvince(1);
-        account.setCity(2);
-        account.setCounty(3);
-        account.setPwd("test1");
-        account.setMobile("13800138000");
-        account.setRole(1);
+//        account.setProvince(1);
+//        account.setCity(2);
+//        account.setCounty(3);
+//        account.setPwd("");
+//        account.setMobile("13800138000");
+        account.setRole(0);
+        account.setState(0);
         return save(account);
     }
 
@@ -159,8 +162,37 @@ public class AccountServiceImpl implements AccountService {
        Page<Account> page = accountDao.findAll(new Specification<Account>() {
             @Override
             public Predicate toPredicate(Root<Account> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> pl = new ArrayList();
+                if (!ObjectUtils.isEmpty(account.getProvince())){
+                    pl.add(criteriaBuilder.equal(root.get("province"),account.getProvince()));
+                }
+                if (!ObjectUtils.isEmpty(account.getCity())){
+                    pl.add(criteriaBuilder.equal(root.get("city"),account.getCity()));
+                }
+                if (!ObjectUtils.isEmpty(account.getCounty())){
+                    pl.add(criteriaBuilder.equal(root.get("county"),account.getCounty()));
+                }
+                if (!StringUtils.isEmpty(account.getSchoolID())){
+                    pl.add(criteriaBuilder.like(root.get("schoolID"),"%"+account.getSchoolID()+"%"));
+                }
+                if (!StringUtils.isEmpty(account.getSchoolName())){
+                    pl.add(criteriaBuilder.like(root.get("schoolName"),"%"+account.getSchoolName()+"%"));
+                }
+                if (!StringUtils.isEmpty(account.getTeacher())){
+                    pl.add(criteriaBuilder.like(root.get("teacher"),"%"+account.getTeacher()+"%"));
+                }
+                if (!StringUtils.isEmpty(account.getState())){
+                    pl.add(criteriaBuilder.equal(root.get("state"),account.getState()));
+                }
+                if (!StringUtils.isEmpty(account.getMobile())){
+                    pl.add(criteriaBuilder.like(root.get("teacher"),"%"+account.getMobile()+"%"));
+                }
+                pl.add(criteriaBuilder.equal(root.get("role"),0));
 
+                Predicate[] predicates = new Predicate[pl.size()];
+                criteriaQuery.where(pl.toArray(predicates));
                 return null;
+//                return criteriaBuilder.and(pl.toArray(predicates));
             }
         },pageable);
 

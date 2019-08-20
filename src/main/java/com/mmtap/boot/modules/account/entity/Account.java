@@ -24,19 +24,19 @@ public class Account extends MmtapBootBaseEntity {
     private String account;
     private String pwd;
 
-    private int province;
-    private int city;
-    private int county;
+    private Integer province;
+    private Integer city;
+    private Integer county;
 
     private String schoolID;
     private String schoolName;
     private String teacher;
     private String mobile;
-    private int state;
+    private Integer state;
     private String perms;
     private String ipStart;
     private String ipEnd;
-    private int role;
+    private Integer role;
 
     @Transient
     private List<VideoType> vts = new ArrayList();

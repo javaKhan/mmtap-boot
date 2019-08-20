@@ -1,26 +1,28 @@
 package com.mmtap.boot.modules.account.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.mmtap.boot.base.MmtapBootBaseController;
 import com.mmtap.boot.common.utils.ResultUtil;
-import com.mmtap.boot.common.vo.PageVo;
 import com.mmtap.boot.common.vo.Result;
-import com.mmtap.boot.common.vo.SearchVo;
 import com.mmtap.boot.modules.account.entity.Account;
-import com.mmtap.boot.modules.account.entity.Area;
 import com.mmtap.boot.modules.account.service.AccountService;
 import com.mmtap.boot.modules.video.entity.TopVo;
+import com.mmtap.boot.modules.video.entity.VideoType;
+import com.mmtap.boot.modules.video.service.VideoTypeService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Mmtap
@@ -34,6 +36,9 @@ public class AccountController extends MmtapBootBaseController<Account, String> 
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private VideoTypeService videoTypeService;
 
     @Override
     public AccountService getService() {
@@ -158,7 +163,16 @@ public class AccountController extends MmtapBootBaseController<Account, String> 
      */
     @PostMapping("/list")
     public Result listUser(Account account,Pageable pageable){
-        Page page = accountService.listAccount(account,pageable);
+        Page<Account> page = accountService.listAccount(account,pageable);
+        List<VideoType> vts = videoTypeService.allType();
+        page.stream().forEach(a->{
+            if (!StringUtils.isEmpty(a.getPerms())){
+                List<String> ids = JSONUtil.parseArray(a.getPerms()).toList(String.class);
+                List temp = vts.stream().filter(t->ids.contains(t.getId())).collect(Collectors.toList());
+                a.setVts(temp);
+            }
+        });
+
         return new ResultUtil().setData(page,"账号列表");
     }
 
