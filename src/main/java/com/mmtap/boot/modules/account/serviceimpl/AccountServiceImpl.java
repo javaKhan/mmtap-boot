@@ -4,13 +4,17 @@ import com.mmtap.boot.common.utils.JwtUtil;
 import com.mmtap.boot.modules.account.dao.AccountDao;
 import com.mmtap.boot.modules.account.dao.AreaDao;
 import com.mmtap.boot.modules.account.entity.Account;
+import com.mmtap.boot.modules.account.entity.AccountListVo;
 import com.mmtap.boot.modules.account.entity.Area;
 import com.mmtap.boot.modules.account.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Async;
@@ -19,10 +23,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,6 +48,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AreaDao areaDao;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public AccountDao getRepository() {
@@ -160,17 +171,13 @@ public class AccountServiceImpl implements AccountService {
     public Account saveAccount(Account account) {
         Area area = areaDao.getOne(account.getProvince());
         account.setAccount(area.getNail()+account.getSchoolID());
-//        account.setProvince(1);
-//        account.setCity(2);
-//        account.setCounty(3);
-//        account.setPwd("");
-//        account.setMobile("13800138000");
         account.setRole(0);
         account.setState(0);
-        return save(account);
+        return accountDao.save(account);
     }
 
     @Override
+    @Deprecated
     public Page listAccount(Account account, Pageable pageable) {
        Page<Account> page = accountDao.findAll(new Specification<Account>() {
             @Override
@@ -205,10 +212,58 @@ public class AccountServiceImpl implements AccountService {
                 Predicate[] predicates = new Predicate[pl.size()];
                 criteriaQuery.where(pl.toArray(predicates));
                 return null;
-//                return criteriaBuilder.and(pl.toArray(predicates));
             }
         },pageable);
 
+        return page;
+    }
+
+    public Page pageAccount(Account account,Pageable pageable){
+        String sql = "select u.id,u.schoolid,u.school_name,CONCAT(a.name,b.name,c.name) as local,teacher,mobile,state,perms from t_account u LEFT JOIN area a ON u.province=a.id LEFT JOIN area b on u.city=b.id LEFT JOIN area c on u.county=c.id where role=0 ";
+        String countSql = " select count(*) from t_account where role=0 ";
+        if (!ObjectUtils.isEmpty(account.getProvince())){
+            sql = sql+" and province="+account.getProvince();
+            countSql = countSql+" and province="+account.getProvince();
+        }
+        if (!ObjectUtils.isEmpty(account.getCity())){
+            sql = sql+" and city="+account.getCity();
+            countSql = countSql+" and city="+account.getCity();
+        }
+        if (!ObjectUtils.isEmpty(account.getCounty())){
+            sql = sql+" and county="+account.getCounty();
+            countSql = countSql+" and county="+account.getCounty();
+        }
+        if (!StringUtils.isEmpty(account.getSchoolID())){
+            sql = sql+" and schoolid like '%"+account.getSchoolID()+"%' ";
+            countSql = countSql+" and schoolid like '%"+account.getSchoolID()+"%' ";
+        }
+        if (!StringUtils.isEmpty(account.getSchoolName())){
+            sql = sql+" and school_name like '%"+account.getSchoolName()+"%'" ;
+            countSql = countSql+" and school_name like '%"+account.getSchoolName()+"%'";
+        }
+        if (!StringUtils.isEmpty(account.getTeacher())){
+            sql = sql+" and teacher like '%"+account.getTeacher()+"%'";
+            countSql = countSql+ " and teacher like '%"+account.getTeacher()+"%'";
+        }
+        if (!StringUtils.isEmpty(account.getState())){
+            sql = sql+" and state="+account.getState();
+            countSql = countSql+" and state="+account.getState();
+        }
+        if (!StringUtils.isEmpty(account.getMobile())){
+            sql = sql+" and mobile like '%"+account.getMobile()+"%'";
+            countSql = countSql+" and mobile like '%"+account.getMobile()+"%'";
+        }
+
+        Query countQuery = entityManager.createNativeQuery(countSql);
+        long total = ((BigInteger)countQuery.getSingleResult()).longValue();
+
+        Query query = entityManager.createNativeQuery(sql);
+        query.setFirstResult(pageable.getPageNumber()*pageable.getPageSize());
+        query.setMaxResults(pageable.getPageSize());
+        query.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.aliasToBean(AccountListVo.class));
+        List list = query.getResultList();
+
+        Page page = new PageImpl(list,pageable,total);
         return page;
     }
 

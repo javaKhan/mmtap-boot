@@ -38,6 +38,7 @@ public class Account extends MmtapBootBaseEntity {
     private String ipEnd;
     private Integer role;
 
+
     @Transient
     private List<VideoType> vts = new ArrayList();
 

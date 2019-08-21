@@ -4,7 +4,9 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.mmtap.boot.common.vo.SearchVo;
 import com.mmtap.boot.modules.video.dao.VideoDao;
+import com.mmtap.boot.modules.video.dao.VideoTypeDao;
 import com.mmtap.boot.modules.video.entity.Video;
+import com.mmtap.boot.modules.video.entity.VideoType;
 import com.mmtap.boot.modules.video.service.VideoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class VideoServiceImpl implements VideoService {
 
     @Autowired
     private VideoDao videoDao;
+    @Autowired
+    private VideoTypeDao videoTypeDao;
 
     @Override
     public VideoDao getRepository() {
@@ -69,7 +73,7 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Page listVideo(String grade, String typeID, String state, String word, Pageable pageable) {
-        Page page = videoDao.findAll(new Specification<Video>() {
+        Page<Video> page = videoDao.findAll(new Specification<Video>() {
             @Override
             public Predicate toPredicate(Root<Video> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> list = new ArrayList<Predicate>();
@@ -92,6 +96,16 @@ public class VideoServiceImpl implements VideoService {
                 return null;
             }
         },pageable);
+
+        List<VideoType> vl = videoTypeDao.findAll();
+        //类型名称
+        page.stream().forEach(v->{
+            Optional<VideoType> vtc = vl.stream().filter(t->t.getId().equals(v.getType_id())).findFirst();
+            if (vtc.isPresent()){
+                v.setType_name(vtc.get().getName());
+            }
+        });
+
         return page;
     }
 

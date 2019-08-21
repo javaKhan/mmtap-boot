@@ -2,10 +2,10 @@ package com.mmtap.boot.modules.account.controller;
 
 import cn.hutool.json.JSONUtil;
 import com.mmtap.boot.base.MmtapBootBaseController;
-import com.mmtap.boot.common.utils.ObjectUtil;
 import com.mmtap.boot.common.utils.ResultUtil;
 import com.mmtap.boot.common.vo.Result;
 import com.mmtap.boot.modules.account.entity.Account;
+import com.mmtap.boot.modules.account.entity.AccountListVo;
 import com.mmtap.boot.modules.account.service.AccountService;
 import com.mmtap.boot.modules.video.entity.TopVo;
 import com.mmtap.boot.modules.video.entity.VideoType;
@@ -126,8 +126,8 @@ public class AccountController extends MmtapBootBaseController<Account, String> 
         if (StringUtils.isEmpty(account.getTeacher())){
             return new ResultUtil().setErrorMsg("老师不能为空");
         }
-        accountService.saveAccount(account);
-        return new ResultUtil().setSuccessMsg("账号添加成功");
+        Account res = accountService.saveAccount(account);
+        return new ResultUtil().setData(res.getAccount(),"账号添加成功");
     }
 
     /**
@@ -159,7 +159,7 @@ public class AccountController extends MmtapBootBaseController<Account, String> 
         List<String> ids = JSONUtil.parseArray(u.getPerms()).toList(String.class);
         List temp = vts.stream().filter(t->ids.contains(t.getId())).collect(Collectors.toList());
         u.setVts(temp);
-        return new ResultUtil().setSuccessMsg("删除成功");
+        return new ResultUtil().setData(u,"成功");
     }
 
     /**
@@ -192,7 +192,8 @@ public class AccountController extends MmtapBootBaseController<Account, String> 
      */
     @PostMapping("/list")
     public Result listUser(Account account,Pageable pageable){
-        Page<Account> page = accountService.listAccount(account,pageable);
+//        Page<Account> page = accountService.listAccount(account,pageable);
+        Page<AccountListVo> page = accountService.pageAccount(account,pageable);
         List<VideoType> vts = videoTypeService.allType();
         page.stream().forEach(a->{
             if (!StringUtils.isEmpty(a.getPerms())){

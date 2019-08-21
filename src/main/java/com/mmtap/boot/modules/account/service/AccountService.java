@@ -37,7 +37,10 @@ public interface AccountService extends MmtapBootBaseService<Account,String> {
 
     Account saveAccount(Account account);
 
+    @Deprecated
     Page listAccount(Account account, Pageable pageable);
+
+    Page pageAccount(Account account,Pageable pageable);
 
     List listArea(Integer id);
 }

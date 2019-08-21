@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * @author Mmtap
@@ -26,4 +27,6 @@ public class Video extends MmtapBootBaseEntity {
     private String vod;
     private Integer ordered;
 
+    @Transient
+    private String type_name;
 }
