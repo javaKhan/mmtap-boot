@@ -111,4 +111,6 @@ public interface CommonConstant {
      * 部门负责人类型 副负责人
      */
     Integer HEADER_TYPE_VICE = 1;
+
+    String PIC_PATH ="/pics";
 }

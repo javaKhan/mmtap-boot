@@ -8,6 +8,7 @@ import com.mmtap.boot.common.vo.PageVo;
 import com.mmtap.boot.common.vo.Result;
 import com.mmtap.boot.common.vo.SearchVo;
 import com.mmtap.boot.modules.video.entity.VideoType;
+import com.mmtap.boot.modules.video.service.VideoService;
 import com.mmtap.boot.modules.video.service.VideoTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,6 +34,8 @@ public class VideoTypeController extends MmtapBootBaseController<VideoType, Stri
 
     @Autowired
     private VideoTypeService videoTypeService;
+    @Autowired
+    private VideoService videoService;
 
 
 //    @RequestMapping(value = "/getByCondition", method = RequestMethod.GET)
@@ -76,8 +79,11 @@ public class VideoTypeController extends MmtapBootBaseController<VideoType, Stri
         if (StringUtils.isEmpty(id)){
             return new ResultUtil().setErrorMsg("参数不能为空");
         }
+        if (videoService.isHaveTypeVideo(id)){
+            return new ResultUtil().setErrorMsg("该类型含有视频");
+        }
         videoTypeService.delete(id);
-        return new ResultUtil().setSuccessMsg("");
+        return new ResultUtil().setSuccessMsg("删除成功");
     }
 
     @PostMapping("/one")

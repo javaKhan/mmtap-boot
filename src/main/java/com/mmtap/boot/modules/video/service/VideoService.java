@@ -14,4 +14,5 @@ public interface VideoService extends MmtapBootBaseService<Video,String> {
 
    Page listVideo(String grade,String typeID,String state,String word,Pageable pageable);
 
+   boolean isHaveTypeVideo(String tid);
 }

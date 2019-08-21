@@ -38,4 +38,6 @@ public interface AccountService extends MmtapBootBaseService<Account,String> {
     Account saveAccount(Account account);
 
     Page listAccount(Account account, Pageable pageable);
+
+    List listArea(Integer id);
 }

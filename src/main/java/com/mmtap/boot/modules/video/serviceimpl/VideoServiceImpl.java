@@ -8,17 +8,20 @@ import com.mmtap.boot.modules.video.entity.Video;
 import com.mmtap.boot.modules.video.service.VideoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 视频体系接口实现
@@ -66,6 +69,47 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Page listVideo(String grade, String typeID, String state, String word, Pageable pageable) {
-        return null;
+        Page page = videoDao.findAll(new Specification<Video>() {
+            @Override
+            public Predicate toPredicate(Root<Video> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> list = new ArrayList<Predicate>();
+                if (!StringUtils.isEmpty(typeID)){
+                    list.add(criteriaBuilder.equal(root.get("type_id"),typeID));
+                }
+                if (!StringUtils.isEmpty(grade)){
+                    list.add(criteriaBuilder.equal(root.get("grade"),grade));
+                }
+                if (!StringUtils.isEmpty(state)){
+                    list.add(criteriaBuilder.equal(root.get("state"),state));
+                }
+                if (!StringUtils.isEmpty(word)){
+                    list.add(criteriaBuilder.like(root.get("name"),"%"+word+"%"));
+                }
+
+
+                Predicate[] arr = new Predicate[list.size()];
+                query.where(list.toArray(arr));
+                return null;
+            }
+        },pageable);
+        return page;
+    }
+
+    /**
+     * 判断该类型下是否有视频
+     * @param tid
+     * @return  有视频：true
+     *            没有：false
+     */
+    public boolean isHaveTypeVideo(String tid){
+        Video query = new Video();
+        query.setType_id(tid);
+        query.setId(null);
+        Example example = Example.of(query);
+        Optional<Video> v = videoDao.findOne(example);
+        if (v.isPresent()){
+            return true;
+        }
+        return false;
     }
 }

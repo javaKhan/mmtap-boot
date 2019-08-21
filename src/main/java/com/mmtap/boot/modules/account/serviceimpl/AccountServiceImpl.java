@@ -1,20 +1,15 @@
 package com.mmtap.boot.modules.account.serviceimpl;
 
-import cn.hutool.core.date.DateUtil;
-import com.mmtap.boot.common.constant.SecurityConstant;
 import com.mmtap.boot.common.utils.JwtUtil;
 import com.mmtap.boot.modules.account.dao.AccountDao;
 import com.mmtap.boot.modules.account.dao.AreaDao;
 import com.mmtap.boot.modules.account.entity.Account;
 import com.mmtap.boot.modules.account.entity.Area;
 import com.mmtap.boot.modules.account.service.AccountService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,7 +23,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -132,15 +126,34 @@ public class AccountServiceImpl implements AccountService {
         return root;
     }
 
+//    private void findItemChildren(Area item,List<Area> items){
+//        for (int j=0;j<items.size();j++){
+//            Area dt= items.get(j);
+//            if (item.getId()==dt.getPid()){
+//                item.getChild().add(dt);
+//                findItemChildren(dt,items);
+//            }
+//        }
+//    }
+
     private void findItemChildren(Area item,List<Area> items){
-        for (int j=0;j<items.size();j++){
-            Area dt= items.get(j);
-            if (item.getId()==dt.getPid()){
-                item.getChild().add(dt);
-                findItemChildren(dt,items);
+        List<Area> child = items.stream().filter(a->item.getId()==a.getPid()).collect(Collectors.toList());
+        item.setChild(child);
+        if (child.size()>0){
+            for (Area a : item.getChild()){
+                findItemChildren(a,items);
             }
         }
+
+//        for (int j=0;j<items.size();j++){
+//            Area dt= items.get(j);
+//            if (item.getId()==dt.getPid()){
+//                item.getChild().add(dt);
+//                findItemChildren(dt,items);
+//            }
+//        }
     }
+
 
     @Override
     @Transactional
@@ -197,5 +210,11 @@ public class AccountServiceImpl implements AccountService {
         },pageable);
 
         return page;
+    }
+
+
+    @Override
+    public List listArea(Integer id) {
+        return areaDao.findByPid(id);
     }
 }

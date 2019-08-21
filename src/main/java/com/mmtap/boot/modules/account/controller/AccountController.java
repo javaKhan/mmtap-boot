@@ -2,6 +2,7 @@ package com.mmtap.boot.modules.account.controller;
 
 import cn.hutool.json.JSONUtil;
 import com.mmtap.boot.base.MmtapBootBaseController;
+import com.mmtap.boot.common.utils.ObjectUtil;
 import com.mmtap.boot.common.utils.ResultUtil;
 import com.mmtap.boot.common.vo.Result;
 import com.mmtap.boot.modules.account.entity.Account;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -93,9 +95,18 @@ public class AccountController extends MmtapBootBaseController<Account, String> 
     }
 
 
-    @PostMapping("/area")
+    @RequestMapping("/area")
     public Result area(){
         List areaLis = accountService.treeArea();
+        return new ResultUtil().setData(areaLis);
+    }
+
+    @PostMapping("/city")
+    public Result areaFetch(Integer id){
+        if (ObjectUtils.isEmpty(id)){
+            id =0 ;
+        }
+        List areaLis = accountService.listArea(id);
         return new ResultUtil().setData(areaLis);
     }
 
@@ -130,6 +141,24 @@ public class AccountController extends MmtapBootBaseController<Account, String> 
             return new ResultUtil().setErrorMsg("删除用户参数为空!");
         }
         accountService.delete(id);
+        return new ResultUtil().setSuccessMsg("删除成功");
+    }
+
+    /**
+     * 用户详情
+     * @param id
+     * @return
+     */
+    @PostMapping("/one")
+    public Result userDetail(String id){
+        if (StringUtils.isEmpty(id)){
+            return new ResultUtil().setErrorMsg("用户参数为空!");
+        }
+        Account u = accountService.get(id);
+        List<VideoType> vts = videoTypeService.allType();
+        List<String> ids = JSONUtil.parseArray(u.getPerms()).toList(String.class);
+        List temp = vts.stream().filter(t->ids.contains(t.getId())).collect(Collectors.toList());
+        u.setVts(temp);
         return new ResultUtil().setSuccessMsg("删除成功");
     }
 
@@ -201,6 +230,26 @@ public class AccountController extends MmtapBootBaseController<Account, String> 
         ss.add(new TopVo("北京一中",0));
         map.put("schoolTop",ss);
         return new ResultUtil().setData(map);
+    }
+
+    @PostMapping("/admin/reset")
+    public Result adminReset(String opd,String npd,HttpServletRequest request){
+        if (StringUtils.isEmpty(opd)){
+            return new ResultUtil().setErrorMsg("原密码不能为空");
+        }
+        if (StringUtils.isEmpty(StringUtils.isEmpty(npd))){
+            return new ResultUtil().setErrorMsg("密码不能为空");
+        }
+        String token = request.getHeader("token");
+        String name = "test";
+        Optional<Account> account = accountService.findUser(name,1);
+        if (account.isPresent()){
+            account.get().setPwd(npd);
+            accountService.saveAccount(account.get());
+            return new ResultUtil().setSuccessMsg("修改成功");
+        }else {
+            return new ResultUtil().setErrorMsg("无此权限");
+        }
     }
 
 

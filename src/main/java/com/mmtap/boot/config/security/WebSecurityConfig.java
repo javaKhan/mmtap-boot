@@ -43,7 +43,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         for(String url:ignoredUrlsProperties.getUrls()){
             registry.antMatchers(url).permitAll();
         }
-        registry.and().cors().disable();
         registry.and().csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 //        registry.anyRequest().authenticated().and().addFilter(new JWTFilter(authenticationManager(),securityUtil));
     }

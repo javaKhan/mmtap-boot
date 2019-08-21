@@ -21,5 +21,5 @@ public class Area {
     private String nail;
 
     @Transient
-    private List child = new ArrayList();
+    private List<Area> child;
 }
