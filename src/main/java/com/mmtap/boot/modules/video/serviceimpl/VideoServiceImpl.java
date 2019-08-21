@@ -1,8 +1,5 @@
 package com.mmtap.boot.modules.video.serviceimpl;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.StrUtil;
-import com.mmtap.boot.common.vo.SearchVo;
 import com.mmtap.boot.modules.video.dao.VideoDao;
 import com.mmtap.boot.modules.video.dao.VideoTypeDao;
 import com.mmtap.boot.modules.video.entity.Video;
@@ -14,14 +11,15 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 

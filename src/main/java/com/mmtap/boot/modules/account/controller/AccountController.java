@@ -34,28 +34,13 @@ import java.util.stream.Collectors;
 @Api(description = "用户体系管理接口")
 @RequestMapping("/account")
 @Transactional
-public class AccountController extends MmtapBootBaseController<Account, String> {
+public class AccountController {
 
     @Autowired
     private AccountService accountService;
 
     @Autowired
     private VideoTypeService videoTypeService;
-
-    @Override
-    public AccountService getService() {
-        return accountService;
-    }
-
-//    @RequestMapping(value = "/getByCondition", method = RequestMethod.GET)
-//    @ApiOperation(value = "多条件分页获取")
-//    public Result<Page<Account>> getByCondition(@ModelAttribute Account account,
-//                                                @ModelAttribute SearchVo searchVo,
-//                                                @ModelAttribute PageVo pageVo){
-//
-////        Page<Account> page = accountService.findByCondition(account, searchVo, PageUtil.initPage(pageVo));
-//        return new ResultUtil<Page<Account>>().setData(null);
-//    }
 
     /**
      * 前端登录
