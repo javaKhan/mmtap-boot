@@ -56,11 +56,6 @@
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.1.18</version>
         </dependency>
-        <!-- Quartz定时任务 -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-quartz</artifactId>-->
-<!--        </dependency>-->
         <!-- JWT -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -78,12 +73,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <!-- MybatisPlus -->
-<!--        <dependency>-->
-<!--            <groupId>com.baomidou</groupId>-->
-<!--            <artifactId>mybatis-plus-boot-starter</artifactId>-->
-<!--            <version>3.1.1</version>-->
-<!--        </dependency>-->
         <!-- Redis-->
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
@@ -140,12 +129,6 @@
             <artifactId>lombok</artifactId>
             <version>1.18.8</version>
         </dependency>
-        <!--七牛云图片上传SDK-->
-<!--        <dependency>-->
-<!--            <groupId>com.qiniu</groupId>-->
-<!--            <artifactId>qiniu-java-sdk</artifactId>-->
-<!--            <version>[7.2.0, 7.2.99]</version>-->
-<!--        </dependency>-->
         <!-- Jasypt加密 -->
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
@@ -158,12 +141,17 @@
             <artifactId>beetl</artifactId>
             <version>2.9.10</version>
         </dependency>
-        <!-- 热更新 -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-devtools</artifactId>-->
-<!--            <optional>true</optional>-->
-<!--        </dependency>-->
+
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-core</artifactId>
+            <version>4.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>aliyun-java-sdk-vod</artifactId>
+            <version>2.15.5</version>
+        </dependency>
     </dependencies>
 
     <build>

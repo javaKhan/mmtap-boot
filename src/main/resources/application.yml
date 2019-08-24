@@ -75,7 +75,10 @@ ignored:
     - /**/*.ico
     - /account/login
     - /video/pic/**
-
+VOD:
+  accessKeyId: xxxxx
+  accessKeySecret: xxxxxx
+  regionId: xxxx
 # Actuator
 management:
   health:
