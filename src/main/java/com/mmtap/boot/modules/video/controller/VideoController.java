@@ -1,29 +1,34 @@
 package com.mmtap.boot.modules.video.controller;
 
 import cn.hutool.core.io.FileUtil;
-import com.mmtap.boot.base.MmtapBootBaseController;
 import com.mmtap.boot.common.constant.CommonConstant;
 import com.mmtap.boot.common.utils.ResultUtil;
 import com.mmtap.boot.common.vo.Result;
+import com.mmtap.boot.modules.video.dao.VideoEditLogDao;
 import com.mmtap.boot.modules.video.entity.Video;
+import com.mmtap.boot.modules.video.entity.VideoEditLog;
 import com.mmtap.boot.modules.video.service.VideoService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Mmtap
@@ -37,13 +42,9 @@ public class VideoController  {
 
     @Autowired
     private VideoService videoService;
-//
-//    @Override
-//    public VideoService getService() {
-//        return videoService;
-//    }
-//
 
+    @Autowired
+    private VideoEditLogDao videoEditLogDao;
 
     /**
      * 视频列表
@@ -127,6 +128,9 @@ public class VideoController  {
      */
     @PostMapping("/save")
     public Result videoSave(Video video){
+        if (StringUtils.isEmpty(video.getId())){
+            return new ResultUtil().setErrorMsg("编辑视频ID为空");
+        }
         if (StringUtils.isEmpty(video.getType_id())){
             return new ResultUtil().setErrorMsg("缺少类型参数");
         }
@@ -140,6 +144,10 @@ public class VideoController  {
             return new ResultUtil().setErrorMsg("缺少状态参数");
         }
         Video nv = videoService.save(video);
+        VideoEditLog videoEditLog = new VideoEditLog();
+        videoEditLog.setVid(video.getId());
+        videoEditLog.setState(video.getState());
+        videoEditLogDao.save(videoEditLog);
         return new ResultUtil().setData(nv);
     }
 
@@ -151,31 +159,46 @@ public class VideoController  {
     @PostMapping("/one")
     public Result videoInfo(String vid){
         Video video = videoService.get(vid);
+        List<VideoEditLog> logs = videoEditLogDao.findTop5Log(vid);
+        video.setPubList(logs);
         return new ResultUtil().setData(video);
     }
 
-//    /**
-//     * 视频编辑
-//     * @param video
-//     * @return
-//     */
-//    @PostMapping("/edit")
-//    public Result videoEdit(Video video){
-//        if (StringUtils.isEmpty(video.getType_id())){
-//            return new ResultUtil().setErrorMsg("缺少类型参数!");
-//        }
-//        if (StringUtils.isEmpty(video.getGrade())){
-//            return new ResultUtil().setErrorMsg("缺少年级!");
-//        }
-//        if (StringUtils.isEmpty(video.getName())){
-//            return new ResultUtil().setErrorMsg("缺少名称参数!");
-//        }
-//        if (StringUtils.isEmpty(video.getState())){
-//            return new ResultUtil().setErrorMsg("缺少状态参数!");
-//        }
-//        Video nv = videoService.save(video);
-//        return new ResultUtil().setData(nv);
-//    }
+    /**
+     * 视频编辑
+     * @param video
+     * @return
+     */
+    @PostMapping("/edit")
+    public Result videoEdit(Video video){
+        if (StringUtils.isEmpty(video.getId())){
+            return new ResultUtil().setErrorMsg("编辑视频ID为空");
+        }
+        if (StringUtils.isEmpty(video.getType_id())){
+            return new ResultUtil().setErrorMsg("缺少类型参数!");
+        }
+        if (StringUtils.isEmpty(video.getGrade())){
+            return new ResultUtil().setErrorMsg("缺少年级!");
+        }
+        if (StringUtils.isEmpty(video.getName())){
+            return new ResultUtil().setErrorMsg("缺少名称参数!");
+        }
+        if (StringUtils.isEmpty(video.getState())){
+            return new ResultUtil().setErrorMsg("缺少状态参数!");
+        }
+        Optional<Video> oov = videoService.findByVid(video.getId());
+        if (oov.isPresent()){
+            Video nv = videoService.save(video);
+            if (!oov.get().getState().equals(video.getState())){
+                VideoEditLog videoEditLog = new VideoEditLog();
+                videoEditLog.setVid(video.getId());
+                videoEditLog.setState(video.getState());
+                videoEditLogDao.save(videoEditLog);
+            }
+            return new ResultUtil().setData(nv);
+        }
+        return new ResultUtil().setSuccessMsg("编辑成功");
+    }
 
     /**
      * 视频的发布或取消
@@ -189,9 +212,16 @@ public class VideoController  {
             return new ResultUtil().setErrorMsg("参数不能为空");
         }
         Video ov = videoService.get(vid);
-        ov.setState(state);
-        Video nv = videoService.save(ov);
-        return new ResultUtil().setData(nv,"编辑成功");
+        if (!state.equals(ov.getState())){
+            ov.setState(state);
+            Video nv = videoService.save(ov);
+            VideoEditLog vel = new VideoEditLog();
+            vel.setVid(vid);
+            vel.setState(state);
+            videoEditLogDao.save(vel);
+            return new ResultUtil().setData(nv,"编辑成功");
+        }
+        return new ResultUtil().setSuccessMsg("操作成功");
     }
 
 

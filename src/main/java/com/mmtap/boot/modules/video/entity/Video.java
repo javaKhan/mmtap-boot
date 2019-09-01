@@ -7,6 +7,8 @@ import lombok.Data;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Mmtap
@@ -29,4 +31,7 @@ public class Video extends MmtapBootBaseEntity {
 
     @Transient
     private String type_name;
+
+    @Transient
+    private List pubList = new ArrayList();
 }
