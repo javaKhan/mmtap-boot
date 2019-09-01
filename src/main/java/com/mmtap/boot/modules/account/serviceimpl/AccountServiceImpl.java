@@ -272,4 +272,9 @@ public class AccountServiceImpl implements AccountService {
     public List listArea(Integer id) {
         return areaDao.findByPid(id);
     }
+
+    @Override
+    public int userSum() {
+        return accountDao.userSum();
+    }
 }

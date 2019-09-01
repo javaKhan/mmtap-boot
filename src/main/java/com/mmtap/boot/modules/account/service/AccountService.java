@@ -43,4 +43,6 @@ public interface AccountService extends MmtapBootBaseService<Account,String> {
     Page pageAccount(Account account,Pageable pageable);
 
     List listArea(Integer id);
+
+    int userSum();
 }

@@ -19,4 +19,6 @@ public interface VideoService extends MmtapBootBaseService<Video,String> {
    boolean isHaveTypeVideo(String tid);
 
     Optional<Video> findByVid(String vid);
+
+    int videoSum();
 }

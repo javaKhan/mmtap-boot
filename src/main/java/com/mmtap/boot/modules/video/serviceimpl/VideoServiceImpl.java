@@ -102,4 +102,9 @@ public class VideoServiceImpl implements VideoService {
     public Optional<Video> findByVid(String vid) {
         return videoDao.findById(vid);
     }
+
+    @Override
+    public int videoSum() {
+        return videoDao.videoSum();
+    }
 }

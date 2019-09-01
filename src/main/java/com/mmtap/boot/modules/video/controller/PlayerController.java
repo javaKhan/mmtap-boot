@@ -104,6 +104,7 @@ public class PlayerController {
                 VideoLog videoLog = new VideoLog();
                 videoLog.setVid(vid);
                 videoLog.setUid(uid);
+                videoLog.setVod(vod);
                 videoLogService.save(videoLog);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -6,8 +6,9 @@ import com.mmtap.boot.common.vo.Result;
 import com.mmtap.boot.modules.account.entity.Account;
 import com.mmtap.boot.modules.account.entity.AccountListVo;
 import com.mmtap.boot.modules.account.service.AccountService;
-import com.mmtap.boot.modules.video.entity.TopVo;
 import com.mmtap.boot.modules.video.entity.VideoType;
+import com.mmtap.boot.modules.video.service.PlayerService;
+import com.mmtap.boot.modules.video.service.VideoService;
 import com.mmtap.boot.modules.video.service.VideoTypeService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,11 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private VideoService videoService;
+
+    @Autowired
+    private PlayerService playerService;
     @Autowired
     private VideoTypeService videoTypeService;
 
@@ -197,22 +203,30 @@ public class AccountController {
     @PostMapping("/admin/info")
     public Result adminInfo(){
         Map map = new HashMap();
-        map.put("userSum",0);
-        map.put("videoSum",0);
-        map.put("playSum",0);
+
+        int userSum = accountService.userSum();
+        map.put("userSum",userSum);
+
+        int videoSum = videoService.videoSum();
+        map.put("videoSum",videoSum);
+
+        int playSum = playerService.playSum();
+        map.put("playSum",playSum);
 
         List vs = new ArrayList();
-        vs.add(new TopVo("哪吒",3005));
-        vs.add(new TopVo("狮子王",105));
-        vs.add(new TopVo("无间道",12));
-        vs.add(new TopVo("西游记",1));
+        vs = playerService.topVideo();
+//        vs.add(new TopVo("哪吒",3005));
+//        vs.add(new TopVo("狮子王",105));
+//        vs.add(new TopVo("无间道",12));
+//        vs.add(new TopVo("西游记",1));
         map.put("videoTop",vs);
 
         List ss = new ArrayList();
-        ss.add(new TopVo("北京四中",23));
-        ss.add(new TopVo("北京三中",15));
-        ss.add(new TopVo("北京二中",12));
-        ss.add(new TopVo("北京一中",0));
+        ss = playerService.topSchool();
+//        ss.add(new TopVo("北京四中",23));
+//        ss.add(new TopVo("北京三中",15));
+//        ss.add(new TopVo("北京二中",12));
+//        ss.add(new TopVo("北京一中",0));
         map.put("schoolTop",ss);
         return new ResultUtil().setData(map);
     }

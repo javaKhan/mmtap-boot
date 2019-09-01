@@ -17,4 +17,7 @@ import javax.persistence.Table;
 public class VideoLog extends MmtapBootBaseEntity {
     private String vid;
     private String uid;
+    private String vod;
+//    private String sn;      //学校名称
+//    private String vn;      //视频名称
 }

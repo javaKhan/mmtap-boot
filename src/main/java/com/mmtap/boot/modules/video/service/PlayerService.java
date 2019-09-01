@@ -7,6 +7,8 @@ import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 
 public interface PlayerService {
 
@@ -19,4 +21,10 @@ public interface PlayerService {
     CreateUploadImageResponse createUploadImage(String id) throws Exception;
 
     Page getVideoList(String grade, String typdID, Pageable pageable) throws Exception;
+
+    int playSum();
+
+    List topVideo();
+
+    List topSchool();
 }

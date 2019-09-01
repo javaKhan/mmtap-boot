@@ -16,4 +16,8 @@ public interface VideoDao extends MmtapBootBaseDao<Video,String> {
             countQuery = " select count(*) from t_video state=?1 and grade=?2 and type_id=?3"
     )
     Page<Video> findByStateAndGradeAndType_id(String state, String grade, String type , Pageable pageable);
+
+    @Query(nativeQuery = true,
+    value = "select count(*) from t_video where vod is not null ")
+    int videoSum();
 }

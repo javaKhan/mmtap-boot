@@ -4,6 +4,8 @@ import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.vod.model.v20170321.*;
 import com.mmtap.boot.modules.video.dao.VideoDao;
+import com.mmtap.boot.modules.video.dao.VideoLogDao;
+import com.mmtap.boot.modules.video.entity.TopVo;
 import com.mmtap.boot.modules.video.entity.Video;
 import com.mmtap.boot.modules.video.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +29,9 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Autowired
     private VideoDao videoDao;
+
+    @Autowired
+    private VideoLogDao videoLogDao;
 
     public CreateUploadVideoResponse createUploadVideo(String vid,String name) throws Exception {
         CreateUploadVideoRequest request = new CreateUploadVideoRequest();
@@ -99,5 +105,34 @@ public class PlayerServiceImpl implements PlayerService {
         }else {
             return null;
         }
+    }
+
+    @Override
+    public int playSum() {
+        return videoLogDao.playSum();
+    }
+
+    @Override
+    public List topVideo() {
+        List res  = videoLogDao.topVideo();
+        return formatVo(res);
+    }
+
+    @Override
+    public List topSchool() {
+        List res  = videoLogDao.topSchool();
+        return formatVo(res);
+    }
+
+    private List<TopVo> formatVo(List data){
+        List temp = new ArrayList();;
+        for (int i=0;i<data.size();i++){
+            Object[] v =(Object[]) data.get(i);
+            TopVo vo = new TopVo();
+            vo.setName(v[0].toString());
+            vo.setSum(Integer.parseInt(v[1].toString()));
+            temp.add(vo);
+        }
+        return temp;
     }
 }
