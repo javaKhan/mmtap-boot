@@ -42,33 +42,6 @@ public class VideoServiceImpl implements VideoService {
         return videoDao;
     }
 
-//    @Override
-//    public Page<Video> findByCondition(Video video, SearchVo searchVo, Pageable pageable) {
-//
-//        return videoDao.findAll(new Specification<Video>() {
-//            @Nullable
-//            @Override
-//            public Predicate toPredicate(Root<Video> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
-//
-//                // TODO 可添加你的其他搜索过滤条件 默认已有创建时间过滤
-//                Path<Date> createTimeField=root.get("createTime");
-//
-//                List<Predicate> list = new ArrayList<Predicate>();
-//
-//                //创建时间
-//                if(StrUtil.isNotBlank(searchVo.getStartDate())&&StrUtil.isNotBlank(searchVo.getEndDate())){
-//                    Date start = DateUtil.parse(searchVo.getStartDate());
-//                    Date end = DateUtil.parse(searchVo.getEndDate());
-//                    list.add(cb.between(createTimeField, start, DateUtil.endOfDay(end)));
-//                }
-//
-//                Predicate[] arr = new Predicate[list.size()];
-//                cq.where(list.toArray(arr));
-//                return null;
-//            }
-//        }, pageable);
-//    }
-
     @Override
     public Page listVideo(String grade, String typeID, String state, String word, Pageable pageable) {
         Page<Video> page = videoDao.findAll(new Specification<Video>() {
@@ -123,5 +96,10 @@ public class VideoServiceImpl implements VideoService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Optional<Video> findByVid(String vid) {
+        return videoDao.findById(vid);
     }
 }

@@ -10,15 +10,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.security.SecurityUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 
 @Slf4j
 public class JWTFilter extends BasicAuthenticationFilter {
@@ -36,46 +40,64 @@ public class JWTFilter extends BasicAuthenticationFilter {
         if(StrUtil.isBlank(header)){
             header = request.getParameter(SecurityConstant.HEADER);
         }
-//        Boolean notValid = StrUtil.isBlank(header) || !header.startsWith(SecurityConstant.TOKEN_SPLIT);
-//        Boolean notValid = StrUtil.isBlank(header);
-        //Token有效性校验
         try {
-            UsernamePasswordAuthenticationToken authentication = getAuthentication(header, response);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }catch (Exception e){
-            e.toString();
-        }
-
-        chain.doFilter(request, response);
-    }
-
-    private UsernamePasswordAuthenticationToken getAuthentication(String header, HttpServletResponse response) {
-        // 用户名
-        String username = null;
-
-        // JWT
-        try {
-            // 解析token
             Claims claims = Jwts.parser()
                     .setSigningKey(SecurityConstant.JWT_SIGN_KEY)
                     .parseClaimsJws(header.replace(SecurityConstant.TOKEN_SPLIT, ""))
                     .getBody();
 
-            // 获取用户名
-            username = claims.get("name").toString();
-//            username = claims.getSubject();
-        } catch (ExpiredJwtException e) {
-            ResponseUtil.out(response, ResponseUtil.resultMap(false,401,"登录已失效，请重新登录"));
-        } catch (Exception e){
-            log.error(e.toString());
-            ResponseUtil.out(response, ResponseUtil.resultMap(false,500,"解析token错误"));
+            String username = claims.get("name").toString();
+            if (StringUtils.isEmpty(username)){
+                ResponseUtil.out(response, ResponseUtil.resultMap(false,401,"登录已失效，请重新登录"));
+            }
+            Authentication authentication = new MyAuthentication();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }catch (Exception e){
+            ResponseUtil.out(response, ResponseUtil.resultMap(false,400,"用户认证失败,请重新登录!"));
         }
 
-        if(StrUtil.isNotBlank(username)) {
-            //此处password不能为null
-            User principal = new User(username, "", null);
-            return new UsernamePasswordAuthenticationToken(principal, null);
+        chain.doFilter(request, response);
+    }
+
+    private class MyAuthentication implements Authentication {
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+            return null;
         }
-        return null;
+
+        @Override
+        public Object getCredentials() {
+            return null;
+        }
+
+        @Override
+        public Object getDetails() {
+            return null;
+        }
+
+        @Override
+        public Object getPrincipal() {
+            return null;
+        }
+
+        /**
+         * 有此步骤断定登录有效性
+         * 自己实现到默认都为成功，失败的没有此对象
+         * @return
+         */
+        @Override
+        public boolean isAuthenticated() {
+            return true;
+        }
+
+        @Override
+        public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+
+        }
+
+        @Override
+        public String getName() {
+            return null;
+        }
     }
 }

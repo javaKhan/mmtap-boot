@@ -44,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             registry.antMatchers(url).permitAll();
         }
         registry.and().csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//        registry.anyRequest().authenticated().and().addFilter(new JWTFilter(authenticationManager(),securityUtil));
+        registry.anyRequest().authenticated().and().addFilter(new JWTFilter(authenticationManager(),securityUtil));
     }
 
     @Bean

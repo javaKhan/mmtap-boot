@@ -1,7 +1,6 @@
 package com.mmtap.boot.modules.account.controller;
 
 import cn.hutool.json.JSONUtil;
-import com.mmtap.boot.base.MmtapBootBaseController;
 import com.mmtap.boot.common.utils.ResultUtil;
 import com.mmtap.boot.common.vo.Result;
 import com.mmtap.boot.modules.account.entity.Account;
@@ -166,7 +165,7 @@ public class AccountController {
         if (StringUtils.isEmpty(account.getTeacher())){
             return new ResultUtil().setErrorMsg("老师不能为空");
         }
-        accountService.save(account);
+        accountService.saveAccount(account);
         return new ResultUtil().setSuccessMsg("保存成功");
     }
 
@@ -218,6 +217,13 @@ public class AccountController {
         return new ResultUtil().setData(map);
     }
 
+    /**
+     * 管理：修改密码接口
+     * @param opd
+     * @param npd
+     * @param request
+     * @return
+     */
     @PostMapping("/admin/reset")
     public Result adminReset(String opd,String npd,HttpServletRequest request){
         if (StringUtils.isEmpty(opd)){
