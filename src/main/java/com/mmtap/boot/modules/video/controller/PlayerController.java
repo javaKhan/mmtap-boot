@@ -4,6 +4,7 @@ import com.aliyuncs.vod.model.v20170321.CreateUploadImageResponse;
 import com.aliyuncs.vod.model.v20170321.CreateUploadVideoResponse;
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
 import com.mmtap.boot.common.constant.SecurityConstant;
+import com.mmtap.boot.common.utils.JwtUtil;
 import com.mmtap.boot.common.utils.ResultUtil;
 import com.mmtap.boot.common.vo.Result;
 import com.mmtap.boot.modules.video.entity.Video;
@@ -89,7 +90,7 @@ public class PlayerController {
             return new  ResultUtil().setErrorMsg("参数不能为空");
         }
         String token = request.getHeader(SecurityConstant.HEADER);
-        String uid = "";  //TODO 简析token获取用户
+        String uid = JwtUtil.getHeaderValue(token,"uid");
         Optional<Video> vo = videoService.findByVid(vid);
         GetVideoPlayAuthResponse res = null;
         if (vo.isPresent()){

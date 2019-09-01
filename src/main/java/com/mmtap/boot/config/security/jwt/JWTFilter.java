@@ -2,6 +2,7 @@ package com.mmtap.boot.config.security.jwt;
 
 import cn.hutool.core.util.StrUtil;
 import com.mmtap.boot.common.constant.SecurityConstant;
+import com.mmtap.boot.common.utils.JwtUtil;
 import com.mmtap.boot.common.utils.ResponseUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -41,13 +42,8 @@ public class JWTFilter extends BasicAuthenticationFilter {
             header = request.getParameter(SecurityConstant.HEADER);
         }
         try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(SecurityConstant.JWT_SIGN_KEY)
-                    .parseClaimsJws(header.replace(SecurityConstant.TOKEN_SPLIT, ""))
-                    .getBody();
-
-            String username = claims.get("name").toString();
-            if (StringUtils.isEmpty(username)){
+            String userName = JwtUtil.getHeaderValue(header,"name");
+            if (StringUtils.isEmpty(userName)){
                 ResponseUtil.out(response, ResponseUtil.resultMap(false,401,"登录已失效，请重新登录"));
             }
             Authentication authentication = new MyAuthentication();
