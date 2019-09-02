@@ -16,18 +16,11 @@ import java.util.Optional;
  */
 public interface AccountService extends MmtapBootBaseService<Account,String> {
 
-//    /**
-//    * 多条件分页获取
-//    * @param account
-//    * @param searchVo
-//    * @param pageable
-//    * @return
-//    */
-//    Page<Account> findByCondition(Account account, SearchVo searchVo, Pageable pageable);
-
     List initArea();
 
     Optional<Account> findUser(String name, int role);
+
+    Optional<Account> findByUID(String uid);
 
     Map adminLogin(Account account,String password);
 
@@ -36,6 +29,8 @@ public interface AccountService extends MmtapBootBaseService<Account,String> {
     List treeArea();
 
     Account saveAccount(Account account);
+
+    Account saveAdminAccount(Account account);
 
     @Deprecated
     Page listAccount(Account account, Pageable pageable);

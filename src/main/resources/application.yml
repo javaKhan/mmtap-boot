@@ -74,6 +74,7 @@ ignored:
     - /**/*.png
     - /**/*.ico
     - /account/login
+    - /account/login/admin
     - /video/pic/**
 VOD:
   accessKeyId: LTAIJYoD0dmqdu6h

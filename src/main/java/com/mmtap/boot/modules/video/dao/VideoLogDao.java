@@ -22,4 +22,8 @@ public interface VideoLogDao extends MmtapBootBaseDao<VideoLog, String> {
     value = " SELECT school_name,sl FROM (\n" +
             "SELECT uid,count(*) AS sl FROM t_video_log WHERE uid IS NOT NULL AND vid IS NOT NULL GROUP BY uid ORDER BY 2 DESC LIMIT 10) l LEFT JOIN t_account a ON l.uid=a.id WHERE school_name IS NOT NULL ")
     List topSchool();
+
+    @Query(nativeQuery = true,
+    value = "select vid,count(*) sl from t_video_log where vid in ?1 GROUP BY vid ")
+    List sumPageVideoPlay(List<String> vids);
 }

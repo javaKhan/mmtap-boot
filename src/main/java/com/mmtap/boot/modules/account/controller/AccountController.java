@@ -1,6 +1,8 @@
 package com.mmtap.boot.modules.account.controller;
 
 import cn.hutool.json.JSONUtil;
+import com.mmtap.boot.common.constant.SecurityConstant;
+import com.mmtap.boot.common.utils.JwtUtil;
 import com.mmtap.boot.common.utils.ResultUtil;
 import com.mmtap.boot.common.vo.Result;
 import com.mmtap.boot.modules.account.entity.Account;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,6 +55,7 @@ public class AccountController {
      * @param name
      * @return
      */
+    @CrossOrigin
     @PostMapping("/login")
     public Result loginFront(String name){
         if (StringUtils.isEmpty(name)){
@@ -71,6 +75,7 @@ public class AccountController {
      * @param password
      * @return
      */
+    @CrossOrigin
     @PostMapping("/login/admin")
     public Result loginBackend(String name,String password){
         if (StringUtils.isEmpty(name)|| StringUtils.isEmpty(password)){
@@ -246,12 +251,17 @@ public class AccountController {
         if (StringUtils.isEmpty(StringUtils.isEmpty(npd))){
             return new ResultUtil().setErrorMsg("密码不能为空");
         }
-        String token = request.getHeader("token");
-        String name = "test";
-        Optional<Account> account = accountService.findUser(name,1);
-        if (account.isPresent()){
+        String token = request.getHeader(SecurityConstant.HEADER);
+        String uid = JwtUtil.getHeaderValue(token,"uid");
+        Optional<Account> account = accountService.findByUID(uid);
+
+        if (account.isPresent() && account.get().getRole()==1){
+            if (!opd.equals(account.get().getPwd())){
+                return new ResultUtil().setSuccessMsg("原密码错误!");
+            }
+
             account.get().setPwd(npd);
-            accountService.saveAccount(account.get());
+            accountService.saveAdminAccount(account.get());
             return new ResultUtil().setSuccessMsg("修改成功");
         }else {
             return new ResultUtil().setErrorMsg("无此权限");

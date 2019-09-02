@@ -28,10 +28,18 @@ public class Video extends MmtapBootBaseEntity {
     private String small;
     private String vod;
     private Integer ordered;
+    private String img; //阿里云图片ID
 
     @Transient
     private String type_name;
 
     @Transient
-    private List pubList = new ArrayList();
+    private List pubList = new ArrayList();  //发布历史数据
+
+    @Transient
+    private String coverURL;
+    @Transient
+    private String imgURL;
+    @Transient
+    private Integer playSum;
 }

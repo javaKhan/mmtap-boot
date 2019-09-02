@@ -72,6 +72,11 @@ public class AccountServiceImpl implements AccountService {
        return accountDao.findByAccountAndRoleAndState(name,role,0);
     }
 
+    @Override
+    public Optional<Account> findByUID(String uid) {
+        return accountDao.findById(uid);
+    }
+
     /**
      * 前端登录
      * @param account
@@ -173,6 +178,11 @@ public class AccountServiceImpl implements AccountService {
         account.setAccount(area.getNail()+account.getSchoolID());
         account.setRole(0);
         account.setState(0);
+        return accountDao.save(account);
+    }
+
+    @Transactional
+    public Account saveAdminAccount(Account account){
         return accountDao.save(account);
     }
 

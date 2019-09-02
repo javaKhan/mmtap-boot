@@ -1,5 +1,6 @@
 package com.mmtap.boot.modules.video.serviceimpl;
 
+import cn.hutool.json.JSONObject;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.vod.model.v20170321.*;
@@ -9,11 +10,11 @@ import com.mmtap.boot.modules.video.entity.TopVo;
 import com.mmtap.boot.modules.video.entity.Video;
 import com.mmtap.boot.modules.video.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -41,11 +42,11 @@ public class PlayerServiceImpl implements PlayerService {
         JSONObject messageCallback = new JSONObject();
         messageCallback.put("CallbackURL", "http://dev.mmtap.com/"+vid);  //回调地址
         messageCallback.put("CallbackType", "http");         //回调协议
-        userData.put("MessageCallback", messageCallback.toJSONString());
+        userData.put("MessageCallback", messageCallback.toString());
         JSONObject extend = new JSONObject();
         extend.put("vid", vid);  //业务ID
-        userData.put("Extend", extend.toJSONString());
-        request.setUserData(userData.toJSONString() );
+        userData.put("Extend", extend.toString());
+        request.setUserData(userData.toString() );
         return client.getAcsResponse(request);
     }
 
@@ -58,11 +59,11 @@ public class PlayerServiceImpl implements PlayerService {
         JSONObject messageCallback = new JSONObject();
         messageCallback.put("CallbackURL", "http://dev.mmtap.com/id");
         messageCallback.put("CallbackType", "http");
-        userData.put("MessageCallback", messageCallback.toJSONString());
+        userData.put("MessageCallback", messageCallback.toString());
         JSONObject extend = new JSONObject();
-        userData.put("Extend", extend.toJSONString());
+        userData.put("Extend", extend.toString());
         extend.put("bid", id);
-        request.setUserData(userData.toJSONString());
+        request.setUserData(userData.toString());
         return client.getAcsResponse(request);
     }
 
@@ -94,17 +95,56 @@ public class PlayerServiceImpl implements PlayerService {
     public Page getVideoList(String grade, String typdID, Pageable pageable) throws Exception{
         Page<Video> page = videoDao.findByStateAndGradeAndType_id("1",grade,typdID,pageable);
         //补充阿里信息
-        GetVideoInfosRequest request = new GetVideoInfosRequest();
-        String vs = page.stream().filter(video -> !StringUtils.isEmpty(video.getVod())).map(v->v.getVod()).collect(Collectors.joining());
+        String vs = page.stream().filter(video -> !StringUtils.isEmpty(video.getVod())).map(v->v.getVod()).collect(Collectors.joining(","));
+
+        //设置视频信息
         if (!StringUtils.isEmpty(vs)){
+            GetVideoInfosRequest request = new GetVideoInfosRequest();
             request.setVideoIds(vs);
             GetVideoInfosResponse response = client.getAcsResponse(request);
-            List vl = response.getVideoList();
-            log.info(vl.toString());
-            return page;
-        }else {
-            return null;
+            List<GetVideoInfosResponse.Video> vl = response.getVideoList();
+            page.stream().forEach(video -> {
+                for (int i=0;i<vl.size();i++){
+                   GetVideoInfosResponse.Video  v =  vl.get(i);
+                    if (video.getVod().equals(v.getVideoId())){
+                        video.setCoverURL(v.getCoverURL());
+                    }
+                }
+            });
         }
+
+        //设置播放数量
+        List<String> vids = page.stream().map(video -> video.getId()).collect(Collectors.toList());
+        List pl = videoLogDao.sumPageVideoPlay(vids);
+
+        //将信息补充给视图
+        page.forEach(video -> {
+            //设置图片
+            if (StringUtils.isEmpty(video.getImg())){
+                GetImageInfoRequest request = new GetImageInfoRequest();
+                request.setImageId(video.getImg());
+                GetImageInfoResponse response = null;
+                try {
+                    response = client.getAcsResponse(request);
+                    video.setImgURL(response.getImageInfo().getURL());
+                } catch (ClientException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //设置播放数量
+            for (int i=0;null!= pl && i<pl.size();i++){
+                Object[] o = (Object[]) pl.get(i);
+                if (video.getId().equals(o[0].toString())){
+                    video.setPlaySum(Integer.parseInt(o[1].toString()));
+                }
+            }
+            if (ObjectUtils.isEmpty(video.getPlaySum())){
+                video.setPlaySum(0);
+            }
+        });
+
+        return page;
     }
 
     @Override

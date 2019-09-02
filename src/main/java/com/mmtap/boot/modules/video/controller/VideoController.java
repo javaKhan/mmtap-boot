@@ -1,6 +1,9 @@
 package com.mmtap.boot.modules.video.controller;
 
 import cn.hutool.core.io.FileUtil;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.vod.model.v20170321.*;
 import com.mmtap.boot.common.constant.CommonConstant;
 import com.mmtap.boot.common.utils.ResultUtil;
 import com.mmtap.boot.common.vo.Result;
@@ -45,6 +48,9 @@ public class VideoController  {
 
     @Autowired
     private VideoEditLogDao videoEditLogDao;
+
+    @Autowired
+    private DefaultAcsClient client;
 
     /**
      * 视频列表
@@ -161,6 +167,29 @@ public class VideoController  {
         Video video = videoService.get(vid);
         List<VideoEditLog> logs = videoEditLogDao.findTop5Log(vid);
         video.setPubList(logs);
+
+        if (!StringUtils.isEmpty(video.getVod())){
+            GetVideoInfoRequest request = new GetVideoInfoRequest();
+            request.setVideoId(video.getVod());
+            GetVideoInfoResponse response = null;
+            try {
+                response = client.getAcsResponse(request);
+                video.setCoverURL(response.getVideo().getCoverURL());
+            } catch (ClientException e) {
+                e.printStackTrace();
+            }
+        }
+        if (!StringUtils.isEmpty(video.getImg())){
+            GetImageInfoRequest request = new GetImageInfoRequest();
+            request.setImageId("ImageId");
+            GetImageInfoResponse response = null;
+            try {
+                response = client.getAcsResponse(request);
+                video.setImgURL(response.getImageInfo().getURL());
+            } catch (ClientException e) {
+                e.printStackTrace();
+            }
+        }
         return new ResultUtil().setData(video);
     }
 
