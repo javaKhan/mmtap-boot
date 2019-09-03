@@ -115,12 +115,27 @@ public class PlayerServiceImpl implements PlayerService {
 
         //设置播放数量
         List<String> vids = page.stream().map(video -> video.getId()).collect(Collectors.toList());
-        List pl = videoLogDao.sumPageVideoPlay(vids);
+        if (vids.size()>0){
+            List pl = videoLogDao.sumPageVideoPlay(vids);
+            page.stream().forEach(video -> {
+                //设置播放数量
+                for (int i=0;null!= pl && i<pl.size();i++){
+                    Object[] o = (Object[]) pl.get(i);
+                    if (video.getId().equals(o[0].toString())){
+                        video.setPlaySum(Integer.parseInt(o[1].toString()));
+                    }
+                }
+                if (ObjectUtils.isEmpty(video.getPlaySum())){
+                    video.setPlaySum(0);
+                }
+            });
+        }
 
-        //将信息补充给视图
+
+        //设置图片
         page.forEach(video -> {
-            //设置图片
-            if (StringUtils.isEmpty(video.getImg())){
+
+            if (!StringUtils.isEmpty(video.getImg())){
                 GetImageInfoRequest request = new GetImageInfoRequest();
                 request.setImageId(video.getImg());
                 GetImageInfoResponse response = null;
@@ -130,17 +145,6 @@ public class PlayerServiceImpl implements PlayerService {
                 } catch (ClientException e) {
                     e.printStackTrace();
                 }
-            }
-
-            //设置播放数量
-            for (int i=0;null!= pl && i<pl.size();i++){
-                Object[] o = (Object[]) pl.get(i);
-                if (video.getId().equals(o[0].toString())){
-                    video.setPlaySum(Integer.parseInt(o[1].toString()));
-                }
-            }
-            if (ObjectUtils.isEmpty(video.getPlaySum())){
-                video.setPlaySum(0);
             }
         });
 

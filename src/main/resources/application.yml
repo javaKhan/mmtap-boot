@@ -1,12 +1,8 @@
 # 配置文件加密key 生产环境中可通过环境变量、命令行等形式进行设置
-jasypt:
-  encryptor:
-    password: xboot
-
 server:
   port: 8888
   servlet:
-    context-path: /
+    context-path: /api
   tomcat:
     uri-encoding: UTF-8
     max-threads: 1000
@@ -39,9 +35,9 @@ spring:
   jpa:
     show-sql: true
     # 自动生成表结构
-    generate-ddl: true
+    generate-ddl: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
   # 文件大小上传配置
   servlet:
     multipart:
@@ -51,31 +47,7 @@ spring:
     time-zone: GMT+8
     serialization:
       fail-on-empty-beans: false
-#  boot:
-#    admin:
-#      # 修改上下文路径
-#      context-path: /actuator/admin
-#      client:
-#        url: http://127.0.0.1:${server.port}/actuator/admin
 
-# 忽略鉴权url
-ignored:
-  urls:
-    - /actuator/**
-    - /dictData/getByType/**
-    - /common/**
-    - /druid/**
-    - /swagger-ui.html
-    - /swagger-resources/**
-    - /swagger/**
-    - /**/v2/api-docs
-    - /**/*.js
-    - /**/*.css
-    - /**/*.png
-    - /**/*.ico
-    - /account/login
-    - /account/login/admin
-    - /video/pic/**
 VOD:
   accessKeyId: LTAIJYoD0dmqdu6h
   accessKeySecret: MYFRHfJY0B0m0jvXMMcclOFnW2i08a

@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -92,15 +94,18 @@ public class PlayerController {
         String token = request.getHeader(SecurityConstant.HEADER);
         String uid = JwtUtil.getHeaderValue(token,"uid");
         Optional<Video> vo = videoService.findByVid(vid);
-        GetVideoPlayAuthResponse res = null;
+        Map resMap = new HashMap();
         if (vo.isPresent()){
             try {
                 String vod = vo.get().getVod();
                 if (StringUtils.isEmpty(vod)){
                     return new ResultUtil().setErrorMsg("该课程还未上传");
                 }
-                res = playerService.getVideoPlayAuth(vod);
+                GetVideoPlayAuthResponse res = playerService.getVideoPlayAuth(vod);
                 log.info(res.toString());
+                resMap.put("playAuth",res);
+                resMap.put("title",vo.get().getName());
+                //记录播放日志
                 VideoLog videoLog = new VideoLog();
                 videoLog.setVid(vid);
                 videoLog.setUid(uid);
@@ -111,7 +116,7 @@ public class PlayerController {
                 return new ResultUtil().setErrorMsg("视频服务异常");
             }
         }
-        return new ResultUtil().setData(res);
+        return new ResultUtil().setData(resMap);
     }
 
 
