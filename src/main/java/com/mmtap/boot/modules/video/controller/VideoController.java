@@ -183,10 +183,9 @@ public class VideoController  {
         }
         if (!StringUtils.isEmpty(video.getImg())){
             GetImageInfoRequest request = new GetImageInfoRequest();
-            request.setImageId("ImageId");
-            GetImageInfoResponse response = null;
+            request.setImageId(video.getImg());
             try {
-                response = client.getAcsResponse(request);
+                GetImageInfoResponse response = client.getAcsResponse(request);
                 video.setImgURL(response.getImageInfo().getURL());
             } catch (ClientException e) {
                 e.printStackTrace();
