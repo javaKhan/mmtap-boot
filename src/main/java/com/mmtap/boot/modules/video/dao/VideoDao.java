@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 /**
  * 视频体系数据处理层
  * @author Mmtap
@@ -24,4 +26,6 @@ public interface VideoDao extends MmtapBootBaseDao<Video,String> {
     @Query(nativeQuery = true,
     value = " UPDATE t_video  SET ordered=ordered+1 where ordered>=?1 and type_id=?2 ")
     void updateOrdered(Integer ordered, String type_id);
+
+    List<Video> findByType_id(String tid);
 }

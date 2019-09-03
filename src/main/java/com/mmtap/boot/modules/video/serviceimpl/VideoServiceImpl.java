@@ -87,12 +87,8 @@ public class VideoServiceImpl implements VideoService {
      *            没有：false
      */
     public boolean isHaveTypeVideo(String tid){
-        Video query = new Video();
-        query.setType_id(tid);
-        query.setId(null);
-        Example example = Example.of(query);
-        Optional<Video> v = videoDao.findOne(example);
-        if (v.isPresent()){
+        List<Video> temp = videoDao.findByType_id(tid);
+        if (temp.size()>0){
             return true;
         }
         return false;
