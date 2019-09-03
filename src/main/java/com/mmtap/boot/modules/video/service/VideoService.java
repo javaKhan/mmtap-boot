@@ -3,6 +3,7 @@ package com.mmtap.boot.modules.video.service;
 import com.mmtap.boot.base.MmtapBootBaseService;
 import com.mmtap.boot.common.vo.SearchVo;
 import com.mmtap.boot.modules.video.entity.Video;
+import com.mmtap.boot.modules.video.entity.VideoType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -23,4 +24,5 @@ public interface VideoService extends MmtapBootBaseService<Video,String> {
     int videoSum();
 
     Video saveVideo(Video video);
+
 }

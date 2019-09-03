@@ -90,4 +90,9 @@ public class VideoTypeServiceImpl implements VideoTypeService {
         //保存新的
         videoTypeDao.save(vt);
     }
+
+    @Override
+    public List<VideoType> findByVideoName(String name) {
+        return videoTypeDao.findByName(name);
+    }
 }

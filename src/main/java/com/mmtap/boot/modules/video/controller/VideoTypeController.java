@@ -48,6 +48,10 @@ public class VideoTypeController extends MmtapBootBaseController<VideoType, Stri
         if (StringUtils.isEmpty(vt.getCode())|| StringUtils.isEmpty(vt.getName())){
             return new ResultUtil().setErrorMsg("分类参数不能为空");
         }
+        List<VideoType> temp  = videoTypeService.findByVideoName(vt.getName());
+        if (temp.size()>0){
+            return new ResultUtil().setErrorMsg("分类名称已经存在");
+        }
         videoTypeService.save(vt);
         return new ResultUtil().setSuccessMsg("添加成功");
     }
@@ -59,6 +63,10 @@ public class VideoTypeController extends MmtapBootBaseController<VideoType, Stri
         }
         if (StringUtils.isEmpty(vt.getCode())|| StringUtils.isEmpty(vt.getName())){
             return new ResultUtil().setErrorMsg("分类参数不能为空");
+        }
+        List<VideoType> temp  = videoTypeService.findByVideoName(vt.getName());
+        if (temp.size()>0){
+            return new ResultUtil().setErrorMsg("分类名称已经存在!");
         }
         videoTypeService.saveVideoType(vt);
         return new ResultUtil().setSuccessMsg("编辑完成");

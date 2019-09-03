@@ -31,4 +31,6 @@ public interface VideoTypeService extends MmtapBootBaseService<VideoType,String>
     List countTypeVideo();
 
     void saveVideoType(VideoType vt);
+
+    List<VideoType> findByVideoName(String name);
 }
