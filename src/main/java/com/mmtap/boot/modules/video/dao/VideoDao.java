@@ -27,5 +27,7 @@ public interface VideoDao extends MmtapBootBaseDao<Video,String> {
     value = " UPDATE t_video  SET ordered=ordered+1 where ordered>=?1 and type_id=?2 ")
     void updateOrdered(Integer ordered, String type_id);
 
+    @Query(nativeQuery = true,
+    value = "select  * from t_video where type_id = ?1 limit 1 ")
     List<Video> findByType_id(String tid);
 }
