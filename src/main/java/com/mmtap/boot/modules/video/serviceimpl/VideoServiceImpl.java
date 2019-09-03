@@ -64,6 +64,7 @@ public class VideoServiceImpl implements VideoService {
 
                 Predicate[] arr = new Predicate[list.size()];
                 query.where(list.toArray(arr));
+                query.orderBy(criteriaBuilder.desc(root.get("createTime")));
                 return null;
             }
         },pageable);
