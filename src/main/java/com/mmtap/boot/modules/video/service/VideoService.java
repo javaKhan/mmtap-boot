@@ -21,4 +21,6 @@ public interface VideoService extends MmtapBootBaseService<Video,String> {
     Optional<Video> findByVid(String vid);
 
     int videoSum();
+
+    Video saveVideo(Video video);
 }

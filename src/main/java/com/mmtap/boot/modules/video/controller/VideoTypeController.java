@@ -38,16 +38,6 @@ public class VideoTypeController extends MmtapBootBaseController<VideoType, Stri
     private VideoService videoService;
 
 
-//    @RequestMapping(value = "/getByCondition", method = RequestMethod.GET)
-//    @ApiOperation(value = "视频类型列表")
-//    public Result<Page<VideoType>> getByCondition(@ModelAttribute VideoType videoType,
-//                                                  @ModelAttribute SearchVo searchVo,
-//                                                  @ModelAttribute PageVo pageVo){
-//
-//        Page<VideoType> page = videoTypeService.findByCondition(videoType, searchVo, PageUtil.initPage(pageVo));
-//        return new ResultUtil<Page<VideoType>>().setData(page);
-//    }
-
     @Override
     public MmtapBootBaseService<VideoType, String> getService() {
         return null;
@@ -70,7 +60,7 @@ public class VideoTypeController extends MmtapBootBaseController<VideoType, Stri
         if (StringUtils.isEmpty(vt.getCode())|| StringUtils.isEmpty(vt.getName())){
             return new ResultUtil().setErrorMsg("分类参数不能为空");
         }
-        videoTypeService.save(vt);
+        videoTypeService.saveVideoType(vt);
         return new ResultUtil().setSuccessMsg("编辑完成");
     }
 

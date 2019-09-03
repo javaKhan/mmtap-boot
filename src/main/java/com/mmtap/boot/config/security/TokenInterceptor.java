@@ -33,7 +33,12 @@ public class TokenInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info("==========================");
+        String requestURL = request.getRequestURI();
+        log.info("=========================="+requestURL);
+        if (requestURL.equalsIgnoreCase("/api/account/login/admin")
+                || requestURL.equalsIgnoreCase("/api/account/login")){
+            return true;
+        }
         String header = request.getHeader(SecurityConstant.HEADER);
         if(StrUtil.isBlank(header)){
             header = request.getParameter(SecurityConstant.HEADER);

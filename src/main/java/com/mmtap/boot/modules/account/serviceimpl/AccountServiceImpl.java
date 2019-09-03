@@ -173,9 +173,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public Account saveAccount(Account account) {
-        Area area = areaDao.getOne(account.getProvince());
-        account.setAccount(area.getNail()+account.getSchoolID());
+    public Account saveAccount(Account account, String accStr) {
+        account.setAccount(accStr);
         account.setRole(0);
         account.setState(0);
         return accountDao.save(account);

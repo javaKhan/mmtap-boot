@@ -1,7 +1,6 @@
 package com.mmtap.boot.modules.account.service;
 
 import com.mmtap.boot.base.MmtapBootBaseService;
-import com.mmtap.boot.common.vo.SearchVo;
 import com.mmtap.boot.modules.account.entity.Account;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +27,7 @@ public interface AccountService extends MmtapBootBaseService<Account,String> {
 
     List treeArea();
 
-    Account saveAccount(Account account);
+    Account saveAccount(Account account, String accStr);
 
     Account saveAdminAccount(Account account);
 

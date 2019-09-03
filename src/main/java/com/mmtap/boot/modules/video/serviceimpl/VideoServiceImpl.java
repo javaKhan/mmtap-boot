@@ -107,4 +107,15 @@ public class VideoServiceImpl implements VideoService {
     public int videoSum() {
         return videoDao.videoSum();
     }
+
+    @Override
+    @Transactional
+    public Video saveVideo(Video video) {
+        //更新顺序
+        if (null!=video.getOrdered()){
+            videoDao.updateOrdered(video.getOrdered(),video.getType_id());
+        }
+        //保存视频
+        return videoDao.save(video);
+    }
 }

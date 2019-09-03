@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -149,6 +150,7 @@ public class VideoController  {
         if (StringUtils.isEmpty(video.getState())){
             return new ResultUtil().setErrorMsg("缺少状态参数");
         }
+        video.setCreateTime(new Date());
         Video nv = videoService.save(video);
         VideoEditLog videoEditLog = new VideoEditLog();
         videoEditLog.setVid(video.getId());
@@ -217,7 +219,8 @@ public class VideoController  {
         }
         Optional<Video> oov = videoService.findByVid(video.getId());
         if (oov.isPresent()){
-            Video nv = videoService.save(video);
+            video.setCreateTime(oov.get().getCreateTime());
+            Video nv = videoService.saveVideo(video);
             if (!oov.get().getState().equals(video.getState())){
                 VideoEditLog videoEditLog = new VideoEditLog();
                 videoEditLog.setVid(video.getId());

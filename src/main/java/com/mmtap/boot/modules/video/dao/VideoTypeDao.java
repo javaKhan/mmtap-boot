@@ -17,4 +17,8 @@ public interface VideoTypeDao extends MmtapBootBaseDao<VideoType,String> {
 //    value = "select new Map(type_id,COUNT(*) as sl) from t_video GROUP BY type_id ")
     value = "select type_id,COUNT(*) as sl from t_video GROUP BY type_id ")
     List<Map> countTypeVideo();
+
+    @Query(nativeQuery = true,
+    value = "update t_video_type set  ordered=ordered+1  where ordered>=?1 ")
+    void updateOrder(Integer ordered);
 }

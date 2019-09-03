@@ -5,8 +5,10 @@ import com.mmtap.boot.common.constant.SecurityConstant;
 import com.mmtap.boot.common.utils.JwtUtil;
 import com.mmtap.boot.common.utils.ResultUtil;
 import com.mmtap.boot.common.vo.Result;
+import com.mmtap.boot.modules.account.dao.AreaDao;
 import com.mmtap.boot.modules.account.entity.Account;
 import com.mmtap.boot.modules.account.entity.AccountListVo;
+import com.mmtap.boot.modules.account.entity.Area;
 import com.mmtap.boot.modules.account.service.AccountService;
 import com.mmtap.boot.modules.video.entity.VideoType;
 import com.mmtap.boot.modules.video.service.PlayerService;
@@ -49,6 +51,9 @@ public class AccountController {
     private PlayerService playerService;
     @Autowired
     private VideoTypeService videoTypeService;
+
+    @Autowired
+    private AreaDao areaDao;
 
     /**
      * 前端登录
@@ -121,7 +126,14 @@ public class AccountController {
         if (StringUtils.isEmpty(account.getTeacher())){
             return new ResultUtil().setErrorMsg("老师不能为空");
         }
-        Account res = accountService.saveAccount(account);
+        //判断用户是否存在
+        Area area = areaDao.getOne(account.getProvince());
+        String accStr = area.getNail()+account.getSchoolID();
+        Optional haveAcc = accountService.findUser(accStr,0);
+        if (haveAcc.isPresent()){
+            return new ResultUtil().setErrorMsg("账号已经存在!");
+        }
+        Account res = accountService.saveAccount(account,accStr);
         return new ResultUtil().setData(res.getAccount(),"账号添加成功");
     }
 
@@ -176,7 +188,17 @@ public class AccountController {
         if (StringUtils.isEmpty(account.getTeacher())){
             return new ResultUtil().setErrorMsg("老师不能为空");
         }
-        accountService.saveAccount(account);
+        //校验账号存在
+        Area area = areaDao.getOne(account.getProvince());
+        //生成账号形式
+        String accStr = area.getNail()+account.getSchoolID();
+        if (!accStr.equals(account.getAccount())){
+            Optional haveAcc = accountService.findUser(accStr,0);
+            if (haveAcc.isPresent()){
+                return new ResultUtil().setErrorMsg("账号已经存在!");
+            }
+        }
+        accountService.saveAccount(account, accStr);
         return new ResultUtil().setSuccessMsg("保存成功");
     }
 
@@ -218,20 +240,10 @@ public class AccountController {
         int playSum = playerService.playSum();
         map.put("playSum",playSum);
 
-        List vs = new ArrayList();
-        vs = playerService.topVideo();
-//        vs.add(new TopVo("哪吒",3005));
-//        vs.add(new TopVo("狮子王",105));
-//        vs.add(new TopVo("无间道",12));
-//        vs.add(new TopVo("西游记",1));
+        List vs = playerService.topVideo();
         map.put("videoTop",vs);
 
-        List ss = new ArrayList();
-        ss = playerService.topSchool();
-//        ss.add(new TopVo("北京四中",23));
-//        ss.add(new TopVo("北京三中",15));
-//        ss.add(new TopVo("北京二中",12));
-//        ss.add(new TopVo("北京一中",0));
+        List ss = playerService.topSchool();
         map.put("schoolTop",ss);
         return new ResultUtil().setData(map);
     }

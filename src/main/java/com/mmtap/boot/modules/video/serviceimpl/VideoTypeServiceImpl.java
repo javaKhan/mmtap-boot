@@ -79,4 +79,15 @@ public class VideoTypeServiceImpl implements VideoTypeService {
     public List countTypeVideo() {
         return videoTypeDao.countTypeVideo();
     }
+
+    @Override
+    @Transactional
+    public void saveVideoType(VideoType vt) {
+        //更新顺序
+        if (null!=vt.getOrdered()){
+            videoTypeDao.updateOrder(vt.getOrdered());
+        }
+        //保存新的
+        videoTypeDao.save(vt);
+    }
 }
