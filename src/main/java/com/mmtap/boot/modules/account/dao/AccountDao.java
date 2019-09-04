@@ -14,7 +14,7 @@ public interface AccountDao extends MmtapBootBaseDao<Account,String> {
 
     Optional<Account> findByAccountAndRoleAndState(String name, int role, int state);
 
-    @Query(value = "select count(*) from t_account where state=0 ",
+    @Query(value = "select count(*) from t_account where state=0 and role=0 ",
     nativeQuery = true)
     int userSum();
 }
