@@ -203,7 +203,8 @@ public class AccountController {
         Area area = areaDao.getOne(account.getProvince());
         //生成账号形式
         String accStr = area.getNail()+account.getSchoolID();
-        if (!accStr.equals(account.getAccount())){
+        Optional<Account> dbAcc = accountService.findByUID(account.getId());
+        if (!accStr.equals(dbAcc.get().getAccount())){
             Optional haveAcc = accountService.findUser(accStr,0);
             if (haveAcc.isPresent()){
                 return new ResultUtil().setErrorMsg("账号已经存在!");

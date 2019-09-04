@@ -228,7 +228,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public Page pageAccount(Account account,Pageable pageable){
-        String sql = "select u.id,u.schoolid,u.school_name,CONCAT(a.name,b.name,c.name) as local,teacher,mobile,state,perms from t_account u LEFT JOIN area a ON u.province=a.id LEFT JOIN area b on u.city=b.id LEFT JOIN area c on u.county=c.id where role=0 ORDER BY create_time desc ";
+        String sql = "select u.id,u.schoolid,u.school_name,CONCAT(a.name,b.name,c.name) as local,teacher,mobile,state,perms from t_account u LEFT JOIN area a ON u.province=a.id LEFT JOIN area b on u.city=b.id LEFT JOIN area c on u.county=c.id where role=0 ";
         String countSql = " select count(*) from t_account where role=0 ";
         if (!ObjectUtils.isEmpty(account.getProvince())){
             sql = sql+" and province="+account.getProvince();
@@ -262,6 +262,7 @@ public class AccountServiceImpl implements AccountService {
             sql = sql+" and mobile like '%"+account.getMobile()+"%'";
             countSql = countSql+" and mobile like '%"+account.getMobile()+"%'";
         }
+        sql = sql+" ORDER BY create_time desc  ";
 
         Query countQuery = entityManager.createNativeQuery(countSql);
         long total = ((BigInteger)countQuery.getSingleResult()).longValue();
