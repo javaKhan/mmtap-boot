@@ -210,6 +210,7 @@ public class AccountController {
                 return new ResultUtil().setErrorMsg("账号已经存在!");
             }
         }
+        account.setCreateTime(dbAcc.get().getCreateTime());
         accountService.saveAccount(account, accStr);
         return new ResultUtil().setSuccessMsg("保存成功");
     }

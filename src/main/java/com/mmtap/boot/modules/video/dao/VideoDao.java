@@ -4,6 +4,7 @@ import com.mmtap.boot.base.MmtapBootBaseDao;
 import com.mmtap.boot.modules.video.entity.Video;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public interface VideoDao extends MmtapBootBaseDao<Video,String> {
     value = "select count(*) from t_video where vod is not null ")
     int videoSum();
 
+    @Modifying
     @Query(nativeQuery = true,
     value = " UPDATE t_video  SET ordered=ordered+1 where ordered>=?1 and type_id=?2 ")
     void updateOrdered(Integer ordered, String type_id);
