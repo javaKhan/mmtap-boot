@@ -124,7 +124,7 @@ public class AccountController {
             return new ResultUtil().setErrorMsg("学校ID不能为空");
         }
         if (StringUtils.isEmpty(account.getTeacher())){
-            return new ResultUtil().setErrorMsg("老师不能为空");
+            return new ResultUtil().setErrorMsg("老师不能为空!");
         }
         //判断用户是否存在
         Area area = areaDao.getOne(account.getProvince());
@@ -183,7 +183,7 @@ public class AccountController {
             return new ResultUtil().setErrorMsg("省份不能为空!");
         }
         if (StringUtils.isEmpty(account.getSchoolID())){
-            return new ResultUtil().setErrorMsg("学校ID不能为空");
+            return new ResultUtil().setErrorMsg("学校ID不能为空!");
         }
         if (StringUtils.isEmpty(account.getTeacher())){
             return new ResultUtil().setErrorMsg("老师不能为空");
