@@ -74,13 +74,13 @@ public class AccountController {
         if (!StringUtils.isEmpty(user.get().getIpStart())  && !StringUtils.isEmpty(user.get().getIpEnd())){
             String ipaddres = IpInfoUtil.getIpAddr(request);
             if (StringUtils.isEmpty(ipaddres)){
-                new ResultUtil().setErrorMsg("IP地址受限");
+                new ResultUtil().setErrorMsg("非法IP访问，请联系管理员");
             }else {
                 long source = IpSectionUtil.ipToLong(ipaddres);
                 long start = IpSectionUtil.ipToLong(user.get().getIpStart());
                 long end  = IpSectionUtil.ipToLong(user.get().getIpEnd());
                 if (!(source>=start && source<+end)){
-                    new ResultUtil().setErrorMsg("IP地址受限");
+                    new ResultUtil().setErrorMsg("非法IP访问，请联系管理员");
                 }
             }
 
