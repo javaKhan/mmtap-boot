@@ -176,7 +176,7 @@ public class AccountServiceImpl implements AccountService {
     public Account saveAccount(Account account, String accStr) {
         account.setAccount(accStr);
         account.setRole(0);
-        account.setState(0);
+//        account.setState(0);
         return accountDao.save(account);
     }
 

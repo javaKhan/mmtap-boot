@@ -116,7 +116,6 @@ public class AccountController {
      */
     @PostMapping("/add")
     public Result addUser(Account account, HttpServletRequest request){
-        String token = request.getHeader("token");
         if (StringUtils.isEmpty(account.getProvince())){
             return new ResultUtil().setErrorMsg("省份不能为空");
         }
