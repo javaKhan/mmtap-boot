@@ -92,7 +92,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Page getVideoList(String grade, String typdID, Pageable pageable) throws Exception{
+    public Page getVideoList(String uid, String grade, String typdID, Pageable pageable) throws Exception{
         Page<Video> page = videoDao.findByStateAndGradeAndType_id("1",grade,typdID,pageable);
         //补充阿里信息
         String vs = page.stream().filter(video -> !StringUtils.isEmpty(video.getVod())).map(v->v.getVod()).collect(Collectors.joining(","));

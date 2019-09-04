@@ -20,7 +20,7 @@ public interface PlayerService {
 
     CreateUploadImageResponse createUploadImage(String id) throws Exception;
 
-    Page getVideoList(String grade, String typdID, Pageable pageable) throws Exception;
+    Page getVideoList(String uid, String grade, String typdID, Pageable pageable) throws Exception;
 
     int playSum();
 

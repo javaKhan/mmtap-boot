@@ -119,6 +119,12 @@ public class AccountController {
         if (StringUtils.isEmpty(account.getProvince())){
             return new ResultUtil().setErrorMsg("省份不能为空");
         }
+        if (StringUtils.isEmpty(account.getCity())){
+            return new ResultUtil().setErrorMsg("城市不能为空!");
+        }
+        if (StringUtils.isEmpty(account.getCounty())){
+            return new ResultUtil().setErrorMsg("地区不能为空!");
+        }
         if (StringUtils.isEmpty(account.getSchoolID())){
             return new ResultUtil().setErrorMsg("学校ID不能为空");
         }
@@ -180,6 +186,12 @@ public class AccountController {
         }
         if (StringUtils.isEmpty(account.getProvince())){
             return new ResultUtil().setErrorMsg("省份不能为空!");
+        }
+        if (StringUtils.isEmpty(account.getCity())){
+            return new ResultUtil().setErrorMsg("城市不能为空!");
+        }
+        if (StringUtils.isEmpty(account.getCounty())){
+            return new ResultUtil().setErrorMsg("地区不能为空!");
         }
         if (StringUtils.isEmpty(account.getSchoolID())){
             return new ResultUtil().setErrorMsg("学校ID不能为空!");

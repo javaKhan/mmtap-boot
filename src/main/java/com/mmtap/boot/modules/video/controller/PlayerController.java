@@ -121,7 +121,7 @@ public class PlayerController {
 
 
     @PostMapping("/play/list")
-    public Result getVideo(String grade, String typdID, Pageable pageable){
+    public Result getVideo(String grade, String typdID, Pageable pageable,HttpServletRequest request){
         if (StringUtils.isEmpty(typdID)){
             return new ResultUtil().setErrorMsg("缺少类别");
         }
@@ -130,7 +130,9 @@ public class PlayerController {
         }
         Object res = null;
         try {
-            res = playerService.getVideoList(grade,typdID,pageable);
+            String token = request.getHeader(SecurityConstant.HEADER);
+            String uid = JwtUtil.getHeaderValue(token,"uid");
+            res = playerService.getVideoList(uid,grade,typdID,pageable);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResultUtil().setErrorMsg(e.getMessage());
