@@ -1,5 +1,6 @@
 package com.mmtap.boot.modules.video.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.aliyuncs.vod.model.v20170321.CreateUploadImageResponse;
 import com.aliyuncs.vod.model.v20170321.CreateUploadVideoResponse;
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
@@ -7,11 +8,14 @@ import com.mmtap.boot.common.constant.SecurityConstant;
 import com.mmtap.boot.common.utils.JwtUtil;
 import com.mmtap.boot.common.utils.ResultUtil;
 import com.mmtap.boot.common.vo.Result;
+import com.mmtap.boot.modules.account.entity.Account;
+import com.mmtap.boot.modules.account.service.AccountService;
 import com.mmtap.boot.modules.video.entity.Video;
 import com.mmtap.boot.modules.video.entity.VideoLog;
 import com.mmtap.boot.modules.video.service.PlayerService;
 import com.mmtap.boot.modules.video.service.VideoLogService;
 import com.mmtap.boot.modules.video.service.VideoService;
+import com.mmtap.boot.modules.video.service.VideoTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,8 +43,13 @@ public class PlayerController {
     private VideoService videoService;
 
     @Autowired
-    private VideoLogService videoLogService;
+    private AccountService accountService;
 
+    @Autowired
+    private VideoTypeService videoTypeService;
+
+    @Autowired
+    private VideoLogService videoLogService;
 
     /**
      * 1：客户端先要拿到这个key才能进行客户端上传视频
@@ -119,6 +129,20 @@ public class PlayerController {
         return new ResultUtil().setData(resMap);
     }
 
+
+
+    @PostMapping("/play/type")
+    public Result getType(HttpServletRequest request){
+        String token = request.getHeader(SecurityConstant.HEADER);
+        String uid = JwtUtil.getHeaderValue(token,"uid");
+        Optional<Account> accountOptional = accountService.findByUID(uid);
+        if (accountOptional.isPresent() && !StringUtils.isEmpty(accountOptional.get().getPerms())){
+            List<String> tids = JSONUtil.parseArray(accountOptional.get().getPerms()).toList(String.class);
+            List res = videoTypeService.findUserVideoType(tids);
+            return new ResultUtil().setData(res,"视频信息");
+        }
+        return new ResultUtil().setData(null,"视频信息");
+    }
 
     @PostMapping("/play/list")
     public Result getVideo(String grade, String typdID, Pageable pageable,HttpServletRequest request){

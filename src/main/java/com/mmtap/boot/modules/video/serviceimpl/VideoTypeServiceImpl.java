@@ -95,4 +95,9 @@ public class VideoTypeServiceImpl implements VideoTypeService {
     public List<VideoType> findByVideoName(String name) {
         return videoTypeDao.findByName(name);
     }
+
+    @Override
+    public List findUserVideoType(List<String> tids) {
+        return videoTypeDao.findByIdIn(tids);
+    }
 }

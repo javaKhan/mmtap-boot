@@ -26,4 +26,6 @@ public interface VideoTypeDao extends MmtapBootBaseDao<VideoType,String> {
     void updateOrder(Integer ordered);
 
     List<VideoType> findByName(String name);
+
+    List<VideoType> findByIdIn(List tids);
 }

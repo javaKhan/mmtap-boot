@@ -2,6 +2,7 @@ package com.mmtap.boot.modules.account.controller;
 
 import cn.hutool.json.JSONUtil;
 import com.mmtap.boot.common.constant.SecurityConstant;
+import com.mmtap.boot.common.utils.IpInfoUtil;
 import com.mmtap.boot.common.utils.JwtUtil;
 import com.mmtap.boot.common.utils.ResultUtil;
 import com.mmtap.boot.common.vo.Result;
@@ -62,13 +63,27 @@ public class AccountController {
      */
     @CrossOrigin
     @PostMapping("/login")
-    public Result loginFront(String name){
+    public Result loginFront(String name,HttpServletRequest request){
         if (StringUtils.isEmpty(name)){
             return new ResultUtil().setErrorMsg("账户不正确");
         }
         Optional<Account> user = accountService.findUser(name,0);
         if (!user.isPresent()){
             return new ResultUtil().setErrorMsg("账户不正确!");
+        }
+        if (!StringUtils.isEmpty(user.get().getIpStart())  && !StringUtils.isEmpty(user.get().getIpEnd())){
+            String ipaddres = IpInfoUtil.getIpAddr(request);
+            if (StringUtils.isEmpty(ipaddres)){
+                new ResultUtil().setErrorMsg("IP地址受限");
+            }else {
+                long source = IpSectionUtil.ipToLong(ipaddres);
+                long start = IpSectionUtil.ipToLong(user.get().getIpStart());
+                long end  = IpSectionUtil.ipToLong(user.get().getIpEnd());
+                if (!(source>=start && source<+end)){
+                    new ResultUtil().setErrorMsg("IP地址受限");
+                }
+            }
+
         }
         Map res = accountService.userLogin(user.get());
         return new ResultUtil().setData(res,"登录信息");

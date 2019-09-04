@@ -16,7 +16,7 @@ import java.util.List;
 public interface VideoDao extends MmtapBootBaseDao<Video,String> {
     @Query(nativeQuery = true,
             value = "select * from t_video where state=?1 and grade=?2 and type_id=?3 order by ordered ",
-            countQuery = " select count(*) from t_video state=?1 and grade=?2 and type_id=?3"
+            countQuery = " select count(*) from t_video where state=?1 and grade=?2 and type_id=?3"
     )
     Page<Video> findByStateAndGradeAndType_id(String state, String grade, String type , Pageable pageable);
 
