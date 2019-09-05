@@ -10,6 +10,7 @@ import com.mmtap.boot.common.utils.ResultUtil;
 import com.mmtap.boot.common.vo.Result;
 import com.mmtap.boot.modules.account.entity.Account;
 import com.mmtap.boot.modules.account.service.AccountService;
+import com.mmtap.boot.modules.video.entity.HisPo;
 import com.mmtap.boot.modules.video.entity.Video;
 import com.mmtap.boot.modules.video.entity.VideoLog;
 import com.mmtap.boot.modules.video.service.PlayerService;
@@ -18,6 +19,7 @@ import com.mmtap.boot.modules.video.service.VideoService;
 import com.mmtap.boot.modules.video.service.VideoTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -120,7 +122,7 @@ public class PlayerController {
                 videoLog.setVid(vid);
                 videoLog.setUid(uid);
                 videoLog.setVod(vod);
-                videoLogService.save(videoLog);
+                videoLogService.saveVideoLog(videoLog);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResultUtil().setErrorMsg("视频服务异常");
@@ -163,6 +165,12 @@ public class PlayerController {
         }
         return new ResultUtil().setData(res,"视频信息");
 
+    }
+
+    @PostMapping("/play/history")
+    public Result history(HisPo param,Pageable pageable){
+        Page page = videoLogService.getHistory(param,pageable);
+        return new ResultUtil().setData(page,"播放历史");
     }
 
 }
