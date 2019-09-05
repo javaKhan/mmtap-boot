@@ -100,7 +100,7 @@ public class VideoLogServiceImpl implements VideoLogService {
             countSql.append(" AND l.create_time<="+param.getEnd());
         }
 
-        pageSQL.append("order by l.create_time desc limit "+ pageable.getPageSize()*pageable.getPageNumber()+"," +pageable.getPageSize())
+        pageSQL.append(" order by l.create_time desc limit "+ pageable.getPageSize()*pageable.getPageNumber()+"," +pageable.getPageSize())
                .append(" ) temp left join area p on temp.province=p.id left join area ci on temp.city = ci.id left join area co on temp.county = co.id ");
 
         Query pageQuery = entityManager.createNativeQuery(pageSQL.toString());
