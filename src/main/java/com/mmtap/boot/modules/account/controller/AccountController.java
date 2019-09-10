@@ -79,8 +79,8 @@ public class AccountController {
                 long source = IpSectionUtil.ipToLong(ipaddres);
                 long start = IpSectionUtil.ipToLong(user.get().getIpStart());
                 long end  = IpSectionUtil.ipToLong(user.get().getIpEnd());
-                if (!(source>=start && source<+end)){
-                    new ResultUtil().setErrorMsg("非法IP访问，请联系管理员");
+                if (!(source>=start && source<=end)){
+                   return new ResultUtil().setErrorMsg("非法IP访问，请联系管理员");
                 }
             }
 
@@ -300,8 +300,9 @@ public class AccountController {
                 return new ResultUtil().setSuccessMsg("原密码错误!");
             }
 
-            account.get().setPwd(npd);
-            accountService.saveAdminAccount(account.get());
+            Account newAcc = account.get();
+            newAcc.setPwd(npd);
+            accountService.saveAdminAccount(newAcc);
             return new ResultUtil().setSuccessMsg("修改成功");
         }else {
             return new ResultUtil().setErrorMsg("无此权限");

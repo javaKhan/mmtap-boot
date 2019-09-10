@@ -1,5 +1,6 @@
 package com.mmtap.boot.modules.video.serviceimpl;
 
+import cn.hutool.core.date.DateUtil;
 import com.mmtap.boot.modules.video.dao.VideoLogDao;
 import com.mmtap.boot.modules.video.entity.HisPo;
 import com.mmtap.boot.modules.video.entity.HisVo;
@@ -92,12 +93,12 @@ public class VideoLogServiceImpl implements VideoLogService {
             countSql.append(" AND v.`name` LIKE '%"+param.getCourseName()+"%'");
         }
         if (!StringUtils.isEmpty(param.getStart())){
-            pageSQL.append(" AND l.create_time>="+param.getStart());
-            countSql.append(" AND l.create_time>="+param.getStart());
+            pageSQL.append(" AND l.create_time>='"+DateUtil.format(param.getStart(),"yyyy-MM-dd HH:mm:ss")+"'");
+            countSql.append(" AND l.create_time>='"+DateUtil.format(param.getStart(),"yyyy-MM-dd HH:mm:ss")+"'");
         }
         if (!StringUtils.isEmpty(param.getEnd())){
-            pageSQL.append(" AND l.create_time<="+param.getEnd());
-            countSql.append(" AND l.create_time<="+param.getEnd());
+            pageSQL.append(" AND l.create_time<='"+DateUtil.format(param.getEnd(),"yyyy-MM-dd HH:mm:ss")+"'");
+            countSql.append(" AND l.create_time<='"+DateUtil.format(param.getEnd(),"yyyy-MM-dd HH:mm:ss")+"'");
         }
 
         pageSQL.append(" order by l.create_time desc limit "+ pageable.getPageSize()*pageable.getPageNumber()+"," +pageable.getPageSize())
@@ -105,6 +106,7 @@ public class VideoLogServiceImpl implements VideoLogService {
 
         Query pageQuery = entityManager.createNativeQuery(pageSQL.toString());
         List<HisVo> vos = pageQuery.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.aliasToBean(HisVo.class)).getResultList();
+
         //总数
         Query countQuery = entityManager.createNativeQuery(countSql.toString());
         long total = ((BigInteger)countQuery.getSingleResult()).longValue();

@@ -1,9 +1,11 @@
 package com.mmtap.boot.modules.video.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +17,8 @@ public class HisVo {
     private String typeName;
     private String grade;
     private String videoName;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Data creteTime;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date creteTime;
     private String address;
 }
