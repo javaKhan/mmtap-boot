@@ -84,9 +84,9 @@ public class VideoTypeServiceImpl implements VideoTypeService {
     @Transactional
     public void saveVideoType(VideoType vt) {
         //更新顺序
-        if (null!=vt.getOrdered()){
-            videoTypeDao.updateOrder(vt.getOrdered());
-        }
+//        if (null!=vt.getOrdered()){
+//            videoTypeDao.updateOrder(vt.getOrdered());
+//        }
         //保存新的
         videoTypeDao.save(vt);
     }
