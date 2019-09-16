@@ -102,7 +102,7 @@ public class AccountController {
             return new ResultUtil().setErrorMsg("账户或密码不正确");
         }
         Optional<Account> user = accountService.findUser(name,1);
-        if (!user.isPresent()){
+        if (!user.isPresent() || !user.get().getPwd().equals(password)){
             return new ResultUtil().setErrorMsg("账户或密码不正确");
         }
         Map res = accountService.adminLogin(user.get(),password);
