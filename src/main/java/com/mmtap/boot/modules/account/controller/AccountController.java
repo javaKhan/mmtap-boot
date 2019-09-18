@@ -147,8 +147,8 @@ public class AccountController {
             return new ResultUtil().setErrorMsg("老师不能为空!");
         }
         //判断用户是否存在
-        Area area = areaDao.getOne(account.getProvince());
-        String accStr = area.getNail()+account.getSchoolID();
+//        Area area = areaDao.getOne(account.getProvince());
+        String accStr = account.getSchoolID();
         Optional haveAcc = accountService.findUser(accStr,0);
         if (haveAcc.isPresent()){
             return new ResultUtil().setErrorMsg("账号已经存在!");
