@@ -71,20 +71,20 @@ public class AccountController {
         if (!user.isPresent()){
             return new ResultUtil().setErrorMsg("账户不正确!");
         }
-        if (!StringUtils.isEmpty(user.get().getIpStart())  && !StringUtils.isEmpty(user.get().getIpEnd())){
-            String ipaddres = IpInfoUtil.getIpAddr(request);
-            if (StringUtils.isEmpty(ipaddres)){
-                new ResultUtil().setErrorMsg("非法IP访问，请联系管理员");
-            }else {
-                long source = IpSectionUtil.ipToLong(ipaddres);
-                long start = IpSectionUtil.ipToLong(user.get().getIpStart());
-                long end  = IpSectionUtil.ipToLong(user.get().getIpEnd());
-                if (!(source>=start && source<=end)){
-                   return new ResultUtil().setErrorMsg("非法IP访问，请联系管理员");
-                }
-            }
-
-        }
+//        if (!StringUtils.isEmpty(user.get().getIpStart())  && !StringUtils.isEmpty(user.get().getIpEnd())){
+//            String ipaddres = IpInfoUtil.getIpAddr(request);
+//            if (StringUtils.isEmpty(ipaddres)){
+//                new ResultUtil().setErrorMsg("非法IP访问，请联系管理员");
+//            }else {
+//                long source = IpSectionUtil.ipToLong(ipaddres);
+//                long start = IpSectionUtil.ipToLong(user.get().getIpStart());
+//                long end  = IpSectionUtil.ipToLong(user.get().getIpEnd());
+//                if (!(source>=start && source<=end)){
+//                   return new ResultUtil().setErrorMsg("非法IP访问，请联系管理员");
+//                }
+//            }
+//
+//        }
         Map res = accountService.userLogin(user.get());
         return new ResultUtil().setData(res,"登录信息");
     }
@@ -215,9 +215,9 @@ public class AccountController {
             return new ResultUtil().setErrorMsg("老师不能为空");
         }
         //校验账号存在
-        Area area = areaDao.getOne(account.getProvince());
+//        Area area = areaDao.getOne(account.getProvince());
         //生成账号形式
-        String accStr = area.getNail()+account.getSchoolID();
+        String accStr = account.getSchoolID();
         Optional<Account> dbAcc = accountService.findByUID(account.getId());
         if (!accStr.equals(dbAcc.get().getAccount())){
             Optional haveAcc = accountService.findUser(accStr,0);
