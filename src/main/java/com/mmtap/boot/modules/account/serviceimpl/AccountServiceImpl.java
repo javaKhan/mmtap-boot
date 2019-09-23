@@ -101,8 +101,7 @@ public class AccountServiceImpl implements AccountService {
             返回前端信息
          */
         res.put("token",token);
-        res.put("name",account.getSchoolName());
-        res.put("teacher",account.getTeacher());
+        res.put("name",account.getTeacher());
         res.put("role",account.getRole());
         return res;
     }
